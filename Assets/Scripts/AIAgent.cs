@@ -47,15 +47,27 @@ public class AIAgent : MonoBehaviour {
 		FindComponents();
 	}
 
+	/// <summary>
+	/// Gets the class' required references for components attached to the 
+	/// same game-object as this script, or any of it's children.
+	/// </summary>
 	private void GetComponents() {
 		visualSensor = GetComponent<VisualSensor>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
 	}
 
+	/// <summary>
+	/// Finds the class' required references for components that are attached 
+	/// to other game-objects.
+	/// </summary>
 	private void FindComponents() {
 		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
 	}
 
+	/// <summary>
+	/// Creates a hierarchical task network for the AI to use, if one has not 
+	/// already been created.
+	/// </summary>
 	private void CreateNetwork() {
 		if (hierarchicalTaskNetwork != null) {
 			return;
@@ -65,14 +77,31 @@ public class AIAgent : MonoBehaviour {
 	}
 
 	#region Actions
+	/// <summary>
+	/// Makes the AI agent follow the player.
+	/// </summary>
 	private void Follow() { }
 
-	private void MoveTo() { }
+	/// <summary>
+	/// Makes the AI agent stand at the specified position.
+	/// </summary>
+	/// <param name="targetStandPosition"> The position where the AI agent will move to. </param>
+	private void MoveTo(Vector3 targetStandPosition) { }
 
-	private void PickUp() { }
+	/// <summary>
+	/// Makes the AI agent pick up the specified interactable.
+	/// </summary>
+	/// <param name="objectToPickUp"> The interactable that the AI agent will pick up. </param>
+	private void PickUp(Interactable objectToPickUp) { }
 
+	/// <summary>
+	/// Makes the AI agent drop the interactable it's currently holding.
+	/// </summary>
 	private void Drop() { }
 
+	/// <summary>
+	/// Makes the AI agent stay in place at it's current position.
+	/// </summary>
 	private void Stay() { }
 	#endregion
 }
