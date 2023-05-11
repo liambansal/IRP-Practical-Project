@@ -10,5 +10,7 @@ using UnityEngine;
 /// performs to fulfill their order(s).
 /// </summary>
 public class HierarchicalTaskNetwork : MonoBehaviour {
-	
+	private Task task = null;
+
+	private void CreatePlan() { }
 }
