@@ -11,6 +11,14 @@ using UnityEngine;
 /// </summary>
 public class HierarchicalTaskNetwork : MonoBehaviour {
 	private Task task = null;
+	private Task[] availableTasks = null;
+	private Task[] executableTasks = null;
+
+	public HierarchicalTaskNetwork(Task[] availableTasks) { 
+		this.task = null;
+		this.availableTasks = availableTasks;
+		this.executableTasks = new Task[availableTasks.Length];
+	}
 
 	private void CreatePlan() { }
 }

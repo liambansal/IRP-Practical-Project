@@ -73,7 +73,21 @@ public class AIAgent : MonoBehaviour {
 			return;
 		}
 
-		hierarchicalTaskNetwork = new HierarchicalTaskNetwork();
+		Task FollowTask = new Task(null, Follow);
+		Task MoveToTask = new Task(null, MoveTo);
+		Task PickUpTask = new Task(null, PickUp);
+		Task DropTask = new Task(null, Drop);
+		Task StayTask = new Task(null, Stay);
+
+		Task[] networkTasks = new Task[] {
+			FollowTask,
+			MoveToTask,
+			PickUpTask,
+			DropTask,
+			StayTask
+		};
+
+		hierarchicalTaskNetwork = new HierarchicalTaskNetwork(null);
 	}
 
 	#region Actions
