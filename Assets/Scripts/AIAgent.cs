@@ -78,6 +78,8 @@ public class AIAgent : MonoBehaviour {
 		Task PickUpTask = new Task(null, null, PickUp);
 		Task DropTask = new Task(null, null, Drop);
 		Task StayTask = new Task(null, null, Stay);
+		// TODO: create a goal that can be set by the player.
+		Task FollowOrder = new Task(null, null, null);
 
 		Task[] networkTasks = new Task[] {
 			FollowTask,
@@ -87,7 +89,8 @@ public class AIAgent : MonoBehaviour {
 			StayTask
 		};
 
-		hierarchicalTaskNetwork = new HierarchicalTaskNetwork(null);
+		// TODO: create a list of goals that the HTN can complete.
+		hierarchicalTaskNetwork = new HierarchicalTaskNetwork(null, null);
 	}
 
 	#region Actions

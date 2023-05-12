@@ -17,9 +17,13 @@ public class Task : MonoBehaviour {
 
 	public delegate void Method();
 
+	public Method taskToExecute {
+		get;
+		private set;
+	}
+
 	private List<Condition> preconditions = null;
 	private List<Condition> postconditions = null;
-	private Method taskToExecute = null;
 
 	public Task(List<Condition> preconditions,
 		List<Condition> postconditions,
