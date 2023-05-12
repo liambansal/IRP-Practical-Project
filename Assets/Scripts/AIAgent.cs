@@ -73,11 +73,11 @@ public class AIAgent : MonoBehaviour {
 			return;
 		}
 
-		Task FollowTask = new Task(null, Follow);
-		Task MoveToTask = new Task(null, MoveTo);
-		Task PickUpTask = new Task(null, PickUp);
-		Task DropTask = new Task(null, Drop);
-		Task StayTask = new Task(null, Stay);
+		Task FollowTask = new Task(null, null, Follow);
+		Task MoveToTask = new Task(null, null, MoveTo);
+		Task PickUpTask = new Task(null, null, PickUp);
+		Task DropTask = new Task(null, null, Drop);
+		Task StayTask = new Task(null, null, Stay);
 
 		Task[] networkTasks = new Task[] {
 			FollowTask,
