@@ -1,7 +1,6 @@
 // Written by Liam Bansal
 // Date Created: 9/5/2023
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -31,12 +30,23 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	}
 
 	private void Update() {
+		if (!goal) {
+			FindGoal();
+		}
+
 		if (task) {
 			task.taskToExecute();
 		}
 	}
 
+	// TODO: find the best goal to achieve if none was set by the player.
+	private void FindGoal() {
+
+	}
+
 	// TODO: create plan at run-time.
+	// TODO: create a method to solve which tasks should be executed to achieve
+	// the HTN's goal.
 	private void CreatePlan() {
 		if (plan.Count > 0) {
 			plan.Clear();
