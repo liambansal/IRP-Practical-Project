@@ -20,5 +20,6 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 		this.executableTasks = new Task[availableTasks.Length];
 	}
 
+	// TODO: create plan at run-time.
 	private void CreatePlan() { }
 }

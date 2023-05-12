@@ -10,18 +10,22 @@ using UnityEngine;
 /// Aimed to be used by a HTN.
 /// </summary>
 public class Task : MonoBehaviour {
-	public struct Precondition {
+	public struct Condition {
 		public string condition;
 		public bool satisfied;
 	}
 
 	public delegate void Method();
 
-	private List<Precondition> preconditions = null;
+	private List<Condition> preconditions = null;
+	private List<Condition> postconditions = null;
 	private Method taskToExecute = null;
 
-	public Task(List<Precondition> preconditions, Method taskToExecute) { 
+	public Task(List<Condition> preconditions,
+		List<Condition> postconditions,
+		Method taskToExecute) { 
 		this.preconditions = preconditions;
+		this.postconditions = postconditions;
 		this.taskToExecute = taskToExecute;
 	}
 }
