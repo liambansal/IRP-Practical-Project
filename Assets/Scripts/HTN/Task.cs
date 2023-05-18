@@ -15,8 +15,27 @@ public class Task : MonoBehaviour {
 		public bool satisfied;
 	}
 
+	public enum TaskState {
+		NotStarted,
+		Started,
+		Executing,
+		Finished,
+		Cancelled
+	}
+
 	public delegate void Method();
 
+	/// <summary>
+	/// The current progress made towards completing the task.
+	/// </summary>
+	public TaskState State {
+		get;
+		private set;
+	}
+
+	/// <summary>
+	/// The method to be executed by this class.
+	/// </summary>
 	public Method taskToExecute {
 		get;
 		private set;
