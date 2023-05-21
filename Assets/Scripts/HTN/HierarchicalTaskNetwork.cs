@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static Task;
 
 /// <summary>
 /// The decision making process that will control what actions an AI agent 
@@ -13,7 +14,8 @@ using UnityEngine;
 public class HierarchicalTaskNetwork : MonoBehaviour {
 	private Task goal = null;
 	private Task[] goals = null;
-	private Task nextTaskToExecute = null;
+	private Task currentTaskToExecute = null;
+	private TaskState currentTaskState = TaskState.NotStarted;
 	private Task[] availableTasks = null;
 	private Task[] executableTasks = null;
 	private Stack<Task> plan = null;
@@ -21,7 +23,7 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	public HierarchicalTaskNetwork(Task[] goals, Task[] availableTasks) {
 		this.goal = null;
 		this.goals = goals;
-		this.nextTaskToExecute = null;
+		this.currentTaskToExecute = null;
 		this.availableTasks = availableTasks;
 		this.executableTasks = new Task[availableTasks.Length];
 		this.plan = new Stack<Task>();
@@ -38,17 +40,17 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	}
 
 	private void Update() {
-		if (!goal) {
-			FindGoal();
-		} else {
-			ExecutePlan();
-		}
+		FindGoal();
+		ExecutePlan();
 	}
 
-	// TODO: find the best goal to achieve if none was set by the player.
 	private void FindGoal() {
+		if (goal) {
+			return;
+		}
+
 		Task newGoal = null;
-		// TODO: find the goal here.
+		// TODO: find the best goal to achieve here.
 
 		if (goal != newGoal) {
 			// Only set the goal if it's different to the current one.
@@ -57,7 +59,8 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	}
 
 	private void FindExecuteableActions() {
-
+		// TODO: check if any of the available tasks' preconditions are all
+		// met and add any valid tasks to an array.
 	}
 
 	private void CreatePlan() {
@@ -69,7 +72,7 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 			plan.Clear();
 		}
 
-		OrderTasks(GetValidTasks(goal, availableTasks));
+		OrderTasks(GetValidTasks(goal, executableTasks));
 		SetPlan();
 	}
 
@@ -123,20 +126,26 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	/// Executes the stack of tasks, one at a time, to complete the HTN's goal.
 	/// </summary>
 	private void ExecutePlan() {
-		if (!nextTaskToExecute && plan.Count > 0) {
-			nextTaskToExecute = plan.Pop();
-		} else {
-			// Return because there's no plan to execute.
+		// Does the HTN have no goal?
+		if (!goal ||
+			// Has the HTN's goal been achieved?
+			(currentTaskState == TaskState.Finished && plan.Count == 0) ||
+			// Is there no plan?
+			plan.Count == 0) {
 			return;
 		}
 
+		if (!currentTaskToExecute) {
+			currentTaskToExecute = plan.Pop();
+		}
+
 		// TODO: check tasks pre-conditions are met before executing it.
-		if (nextTaskToExecute) {
+		if (currentTaskToExecute) {
 			// TODO: start executing action...
 			// continue executing action...
 			// if completed go to next action...
 			// if cancelled check plan is still valid...
-			nextTaskToExecute.task();
+			currentTaskState = currentTaskToExecute.task();
 		}
 	}
 }
