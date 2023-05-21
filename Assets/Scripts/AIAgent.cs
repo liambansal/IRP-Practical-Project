@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static Task;
 
 /// <summary>
 /// An autonomous agent that follows orders given by the player, but also 
@@ -97,28 +98,38 @@ public class AIAgent : MonoBehaviour {
 	/// <summary>
 	/// Makes the AI agent follow the player.
 	/// </summary>
-	private void Follow() { }
+	private TaskState Follow() {
+		return TaskState.Executing;
+	}
 
 	/// <summary>
 	/// Makes the AI agent stand at the specified position.
 	/// </summary>
 	/// <param name="targetStandPosition"> The position where the AI agent will move to. </param>
-	private void MoveTo(Vector3 targetStandPosition) { }
+	private TaskState MoveTo(Vector3 targetStandPosition) {
+		return TaskState.Executing;
+	}
 
 	/// <summary>
 	/// Makes the AI agent pick up the specified interactable.
 	/// </summary>
 	/// <param name="objectToPickUp"> The interactable that the AI agent will pick up. </param>
-	private void PickUp(Interactable objectToPickUp) { }
+	private TaskState PickUp(Interactable objectToPickUp) {
+		return TaskState.Executing;
+	}
 
 	/// <summary>
 	/// Makes the AI agent drop the interactable it's currently holding.
 	/// </summary>
-	private void Drop() { }
+	private TaskState Drop() {
+		return TaskState.Executing;
+	}
 
 	/// <summary>
 	/// Makes the AI agent stay in place at it's current position.
 	/// </summary>
-	private void Stay() { }
+	private TaskState Stay() {
+		return TaskState.Executing;
+	}
 	#endregion
 }

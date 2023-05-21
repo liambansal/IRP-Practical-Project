@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// TODO: add subtasks to achieve the overall task
 /// <summary>
 /// Holds a delegate to another class' method with preceonditions that need to 
 /// be satisfied in order to execute the method.
@@ -23,7 +24,7 @@ public class Task : MonoBehaviour {
 		Cancelled
 	}
 
-	public delegate void Method();
+	public delegate TaskState Method();
 
 	/// <summary>
 	/// The current progress made towards completing the task.
@@ -44,16 +45,16 @@ public class Task : MonoBehaviour {
 	/// <summary>
 	/// The method to be executed by this class.
 	/// </summary>
-	public Method taskToExecute {
+	public Method task {
 		get;
 		private set;
 	}
 
 	public Task(List<Condition> preconditions,
 		List<Condition> postconditions,
-		Method taskToExecute) { 
+		Method task) { 
 		this.Preconditions = preconditions;
 		this.Postconditions = postconditions;
-		this.taskToExecute = taskToExecute;
+		this.task = task;
 	}
 }

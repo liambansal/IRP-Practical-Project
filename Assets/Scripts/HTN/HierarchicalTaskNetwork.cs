@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 /// <summary>
@@ -12,7 +13,7 @@ using UnityEngine;
 public class HierarchicalTaskNetwork : MonoBehaviour {
 	private Task goal = null;
 	private Task[] goals = null;
-	private Task task = null;
+	private Task nextTaskToExecute = null;
 	private Task[] availableTasks = null;
 	private Task[] executableTasks = null;
 	private Stack<Task> plan = null;
@@ -20,13 +21,18 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	public HierarchicalTaskNetwork(Task[] goals, Task[] availableTasks) {
 		this.goal = null;
 		this.goals = goals;
-		this.task = null;
+		this.nextTaskToExecute = null;
 		this.availableTasks = availableTasks;
 		this.executableTasks = new Task[availableTasks.Length];
 		this.plan = new Stack<Task>();
 	}
 
 	public void SetGoal(Task goal) {
+		if (!goal) {
+			// Return if no goal has been set.
+			return;
+		}
+
 		this.goal = goal;
 		CreatePlan();
 	}
@@ -34,30 +40,36 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	private void Update() {
 		if (!goal) {
 			FindGoal();
+		} else {
+			ExecutePlan();
 		}
-
-		
 	}
 
 	// TODO: find the best goal to achieve if none was set by the player.
 	private void FindGoal() {
+		Task newGoal = null;
+		// TODO: find the goal here.
 
+		if (goal != newGoal) {
+			// Only set the goal if it's different to the current one.
+			SetGoal(newGoal);
+		}
 	}
 
 	private void FindExecuteableActions() {
 
 	}
 
-	// TODO: create plan at run-time.
-	// TODO: create a method to solve which tasks should be executed to achieve
-	// the HTN's goal.
 	private void CreatePlan() {
+		if (!goal) {
+			return;
+		}
+
 		if (plan.Count > 0) {
 			plan.Clear();
 		}
 
 		OrderTasks(GetValidTasks(goal, availableTasks));
-		// TODO: find which task(s) should be executed to achieve the goal.
 		SetPlan();
 	}
 
@@ -86,12 +98,18 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	/// Orders the tasks by which one is the most optimal to execute first.
 	/// </summary>
 	private void OrderTasks(Task[] tasks) {
-		// TODO: order tasks by which one is the most effective to execute.
+		List<Task> orderedTasks = new List<Task>();
+
+		// TODO: order tasks by which one is the most effective to execute
+		//orderedTasks = tasks.OrderBy(task => task.Postconditions);
 		// TODO: if two tasks are on par then order them by something else...
 	}
 
+	// TODO: find which task(s) should be executed to achieve the goal.
 	private void SetPlan() {
 		// TODO: go through ordered tasks until a set that satisfies all preconditions is found.
+
+		// (whichever set of tasks complete the preconditions in the fewest steps).
 			// TODO: if a task doesn't satisfy the goal's preconditions by itself
 			// then look for other tasks that satisfy the other conditions. May need
 			// to call GetTasks again, but remvove the tasks that have already been
@@ -105,19 +123,20 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	/// Executes the stack of tasks, one at a time, to complete the HTN's goal.
 	/// </summary>
 	private void ExecutePlan() {
-		if (!task && plan.Count > 0) {
-			task = plan.Pop();
+		if (!nextTaskToExecute && plan.Count > 0) {
+			nextTaskToExecute = plan.Pop();
 		} else {
-			// No plan to execute.
+			// Return because there's no plan to execute.
 			return;
 		}
 
-		if (task) {
+		// TODO: check tasks pre-conditions are met before executing it.
+		if (nextTaskToExecute) {
 			// TODO: start executing action...
 			// continue executing action...
 			// if completed go to next action...
 			// if cancelled check plan is still valid...
-			task.taskToExecute();
+			nextTaskToExecute.task();
 		}
 	}
 }
