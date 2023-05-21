@@ -33,6 +33,14 @@ public class Task : MonoBehaviour {
 		private set;
 	}
 
+	public List<Condition> Preconditions {
+		get;
+		private set;
+	}
+	public List<Condition> Postconditions {
+		get;
+		private set;
+	}
 	/// <summary>
 	/// The method to be executed by this class.
 	/// </summary>
@@ -41,14 +49,11 @@ public class Task : MonoBehaviour {
 		private set;
 	}
 
-	private List<Condition> preconditions = null;
-	private List<Condition> postconditions = null;
-
 	public Task(List<Condition> preconditions,
 		List<Condition> postconditions,
 		Method taskToExecute) { 
-		this.preconditions = preconditions;
-		this.postconditions = postconditions;
+		this.Preconditions = preconditions;
+		this.Postconditions = postconditions;
 		this.taskToExecute = taskToExecute;
 	}
 }

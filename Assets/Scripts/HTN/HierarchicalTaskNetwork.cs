@@ -56,8 +56,7 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 			plan.Clear();
 		}
 
-		GetTasks(goal, availableTasks);
-		OrderTasks();
+		OrderTasks(GetValidTasks(goal, availableTasks));
 		// TODO: find which task(s) should be executed to achieve the goal.
 		SetPlan();
 	}
@@ -67,15 +66,26 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	/// parameter goal task's preconditions.
 	/// </summary>
 	/// <returns></returns>
-	private Task[] GetTasks(Task goalTask, Task[] availableTasks) {
-		// TODO: search tasks for any that satisfy the goal tasks preconditions
-		return null;
+	private Task[] GetValidTasks(Task goalTask, Task[] availableTasks) {
+		List<Task> validTasks = new List<Task>();
+
+		foreach (Task task in availableTasks) {
+			foreach (Task.Condition postCondition in task.Postconditions) {
+				// If a postcondition and precondition match then the
+				// available task satisfies the goal task.
+				if (goal.Preconditions.Contains(postCondition)) {
+					validTasks.Add(task);
+				}
+			}
+		}
+
+		return validTasks.ToArray();
 	}
 
 	/// <summary>
 	/// Orders the tasks by which one is the most optimal to execute first.
 	/// </summary>
-	private void OrderTasks() {
+	private void OrderTasks(Task[] tasks) {
 		// TODO: order tasks by which one is the most effective to execute.
 		// TODO: if two tasks are on par then order them by something else...
 	}
