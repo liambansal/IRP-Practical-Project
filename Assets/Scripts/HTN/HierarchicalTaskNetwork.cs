@@ -30,7 +30,7 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	}
 
 	public void SetGoal(Task goal) {
-		if (!goal) {
+		if (goal == null) {
 			// Return if no goal has been set.
 			return;
 		}
@@ -45,11 +45,11 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	}
 
 	private void FindGoal() {
-		if (goal) {
+		if (goal != null) {
 			return;
 		}
 
-		Task newGoal = null;
+		CompoundTaskClass newGoal = null;
 		// TODO: find the best goal to achieve here.
 
 		if (goal != newGoal) {
@@ -64,7 +64,7 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	}
 
 	private void CreatePlan() {
-		if (!goal) {
+		if (goal == null) {
 			return;
 		}
 
@@ -127,7 +127,7 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 	/// </summary>
 	private void ExecutePlan() {
 		// Does the HTN have no goal?
-		if (!goal ||
+		if (goal == null||
 			// Has the HTN's goal been achieved?
 			(currentTaskState == TaskState.Finished && plan.Count == 0) ||
 			// Is there no plan?
@@ -135,17 +135,26 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 			return;
 		}
 
-		if (!currentTaskToExecute) {
+		if (currentTaskToExecute == null) {
 			currentTaskToExecute = plan.Pop();
 		}
 
 		// TODO: check tasks pre-conditions are met before executing it.
-		if (currentTaskToExecute) {
+		if (currentTaskToExecute != null) {
 			// TODO: start executing action...
+			if (currentTaskToExecute is SingleTask) {
+				(currentTaskToExecute as SingleTask).Task();
+			} else if (currentTaskToExecute is SingleTask) {
+				(currentTaskToExecute as SingleTaskVector).Task((currentTaskToExecute as SingleTaskVector).Vector);
+			} else if (currentTaskToExecute is SingleTask) {
+				(currentTaskToExecute as SingleTaskInteractable).Task((currentTaskToExecute as SingleTaskInteractable).Interactable);
+			} else if (currentTaskToExecute is SingleTask) {
+				//(currentTaskToExecute as CompoundTaskClass).Task();
+			}
+
 			// continue executing action...
 			// if completed go to next action...
 			// if cancelled check plan is still valid...
-			currentTaskState = currentTaskToExecute.task();
 		}
 	}
 }

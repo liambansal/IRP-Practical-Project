@@ -74,13 +74,19 @@ public class AIAgent : MonoBehaviour {
 			return;
 		}
 
-		Task FollowTask = new Task(null, null, Follow);
-		Task MoveToTask = new Task(null, null, MoveTo);
-		Task PickUpTask = new Task(null, null, PickUp);
-		Task DropTask = new Task(null, null, Drop);
-		Task StayTask = new Task(null, null, Stay);
-		// TODO: create a goal that can be set by the player.
-		Task FollowOrder = new Task(null, null, null);
+		SingleTask FollowTask = new SingleTask(Follow, null, null);
+		Stack<Task> taskStack = new Stack<Task>();
+		taskStack.Push(FollowTask);
+		CompoundTaskClass newTask = new CompoundTaskClass(null, null, taskStack);
+
+		Stack<Task> doubleStack = new Stack<Task>();
+		doubleStack.Push(newTask);
+
+		SingleTaskVector MoveToTask = new SingleTaskVector(MoveTo, Vector3.zero, null, null);
+		SingleTaskInteractable PickUpTask = new SingleTaskInteractable(PickUp, null, null, null);
+		SingleTask DropTask = new SingleTask(Drop, null, null);
+		SingleTask StayTask = new SingleTask(Stay, null, null);
+		SingleTask FollowOrder = new SingleTask(null, null, null);
 
 		Task[] networkTasks = new Task[] {
 			FollowTask,
@@ -91,7 +97,7 @@ public class AIAgent : MonoBehaviour {
 		};
 
 		// TODO: create a list of goals that the HTN can complete.
-		hierarchicalTaskNetwork = new HierarchicalTaskNetwork(null, null);
+		hierarchicalTaskNetwork = new HierarchicalTaskNetwork(null, networkTasks);
 	}
 
 	#region Actions
