@@ -49,7 +49,7 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 			return;
 		}
 
-		CompoundTaskClass newGoal = null;
+		Task newGoal = null;
 		// TODO: find the best goal to achieve here.
 
 		if (goal != newGoal) {
@@ -60,7 +60,7 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 
 	private void FindExecuteableActions() {
 		// TODO: check if any of the available tasks' preconditions are all
-		// met and add any valid tasks to an array.
+		// met and add any valid tasks to an array.  
 	}
 
 	private void CreatePlan() {
@@ -108,18 +108,70 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 		// TODO: if two tasks are on par then order them by something else...
 	}
 
-	// TODO: find which task(s) should be executed to achieve the goal.
-	private void SetPlan() {
-		// TODO: go through ordered tasks until a set that satisfies all preconditions is found.
+	/// <summary>
+	/// Creates a stack of tasks to be executed in order to achieve the goal 
+	/// task.
+	/// </summary>
+	/// <param name="goalTask"> The task to create a plan for. </param>
+	/// <returns> The stack of subtasks that acheive the goal. </returns>
+	private Task SetPlan(Task goalTask) {
+		// order the available tasks by which one's postconditions satisfies the goal tasks' preconditions best,
+		// and set them in the same order as the goal tasks preconditions e.g. goal precons =
+		// seeObject, inRange. Then subtasks should be in oder of (seeObject, inRange), (inRange, otherPostcon, seeObject)
+		// seeObject, (otherPostCon, seeObject), inRange, (inRange, otherPostcon).
 
-		// (whichever set of tasks complete the preconditions in the fewest steps).
-			// TODO: if a task doesn't satisfy the goal's preconditions by itself
-			// then look for other tasks that satisfy the other conditions. May need
-			// to call GetTasks again, but remvove the tasks that have already been
-			// evaluated here.
-			// TODO: if a task is added to the set, remove all other ordered tasks
-			// that only satisfy preconditions already found in the set.
-		// TODO: push all required tasks onto the plan stack.
+		// Remove all tasks that don't satisfy the goal tasks preconditions
+		foreach (Condition precondition in goalTask.Preconditions) {
+			foreach (Task task in availableTasks) {
+				if (!task.Postconditions.Contains(precondition)) {
+					// remove task here.
+				}
+			}
+		}
+
+		// Get the task(s) that solve the goal tasks preconditions and add to a stack
+			// loop over tasks that meet the goals preconditions
+				// add current task
+
+				// if goal tasks preconditions are all met, break.
+				// else 
+				// remove other tasks that only share the same postconditions and have no more
+				// continue
+
+		// loop over tasks to check all preconditions are met
+
+		// if all new tasks' preconditions are met
+			// add them as a plan
+		// else 
+		// foreach task
+			// if precons not met && no subtasks exist
+				// repeat above process for all new tasks by CallingAboveMethod() and pass the subTask as a parameter
+				// task.subtasks = AboveMethod();
+
+		// How would you resolve this so the tasks are executed in the correct order?
+		// (if the postcondition of one task, on the same level of depth, satisfies the precondition of another task,
+		// then it must be executed first?)
+
+		// goal: pickup cube
+		// pickup cube (precon = seeCube && inRange)
+			// find cube (compound) (postCon seeCube)
+				// move to (precon = knowDestination, postcon = inPosition)
+					// Must have an order to know the destination.
+				// look around (precon = inPosition, postcon = seeCube)
+			// move to cube (precon = seeCube, postcon = inRange)
+
+		return null;
+
+		// ! OLD COMMENT - Can remove once method works !
+		//// TODO: go through ordered tasks until a set that satisfies all preconditions is found.
+		//// (whichever set of tasks complete the preconditions in the fewest steps).
+		//	// TODO: if a task doesn't satisfy the goal's preconditions by itself
+		//	// then look for other tasks that satisfy the other conditions. May need
+		//	// to call GetTasks again, but remvove the tasks that have already been
+		//	// evaluated here.
+		//	// TODO: if a task is added to the set, remove all other ordered tasks
+		//	// that only satisfy preconditions already found in the set.
+		//// TODO: push all required tasks onto the plan stack.
 	}
 
 	/// <summary>
@@ -142,13 +194,13 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 		// TODO: check tasks pre-conditions are met before executing it.
 		if (currentTaskToExecute != null) {
 			// TODO: start executing action...
-			if (currentTaskToExecute is SingleTask) {
-				(currentTaskToExecute as SingleTask).Task();
-			} else if (currentTaskToExecute is SingleTask) {
-				(currentTaskToExecute as SingleTaskVector).Task((currentTaskToExecute as SingleTaskVector).Vector);
-			} else if (currentTaskToExecute is SingleTask) {
-				(currentTaskToExecute as SingleTaskInteractable).Task((currentTaskToExecute as SingleTaskInteractable).Interactable);
-			} else if (currentTaskToExecute is SingleTask) {
+			if (currentTaskToExecute is PrimitiveTask) {
+				(currentTaskToExecute as PrimitiveTask).Task();
+			} else if (currentTaskToExecute is PrimitiveTask) {
+				(currentTaskToExecute as PrimitiveVectorTask).Task((currentTaskToExecute as PrimitiveVectorTask).Vector);
+			} else if (currentTaskToExecute is PrimitiveTask) {
+				(currentTaskToExecute as PrimitiveTaskInteractable).Task((currentTaskToExecute as PrimitiveTaskInteractable).Interactable);
+			} else if (currentTaskToExecute is PrimitiveTask) {
 				//(currentTaskToExecute as CompoundTaskClass).Task();
 			}
 

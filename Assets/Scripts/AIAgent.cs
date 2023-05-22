@@ -74,19 +74,13 @@ public class AIAgent : MonoBehaviour {
 			return;
 		}
 
-		SingleTask FollowTask = new SingleTask(Follow, null, null);
-		Stack<Task> taskStack = new Stack<Task>();
-		taskStack.Push(FollowTask);
-		CompoundTaskClass newTask = new CompoundTaskClass(null, null, taskStack);
-
-		Stack<Task> doubleStack = new Stack<Task>();
-		doubleStack.Push(newTask);
-
-		SingleTaskVector MoveToTask = new SingleTaskVector(MoveTo, Vector3.zero, null, null);
-		SingleTaskInteractable PickUpTask = new SingleTaskInteractable(PickUp, null, null, null);
-		SingleTask DropTask = new SingleTask(Drop, null, null);
-		SingleTask StayTask = new SingleTask(Stay, null, null);
-		SingleTask FollowOrder = new SingleTask(null, null, null);
+		// TODO: set the conditions in the order they need to be satisfied.
+		PrimitiveTask FollowTask = new PrimitiveTask(Follow, null, null);
+		PrimitiveVectorTask MoveToTask = new PrimitiveVectorTask(MoveTo, Vector3.zero, null, null);
+		PrimitiveTaskInteractable PickUpTask = new PrimitiveTaskInteractable(PickUp, null, null, null);
+		PrimitiveTask DropTask = new PrimitiveTask(Drop, null, null);
+		PrimitiveTask StayTask = new PrimitiveTask(Stay, null, null);
+		PrimitiveTask FollowOrder = new PrimitiveTask(null, null, null);
 
 		Task[] networkTasks = new Task[] {
 			FollowTask,
