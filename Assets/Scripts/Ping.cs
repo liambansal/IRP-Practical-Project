@@ -1,9 +1,8 @@
 // Written by Liam Bansal
 // Date Created: 9/5/2023
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// A UI element that temporarily displays an image above targeted game-object.
@@ -21,6 +20,36 @@ public class Ping : MonoBehaviour {
 		public Vector3 WorldPosition {
 			get;
 			set;
+		}
+	}
+
+	/// <summary>
+	/// How long in seconds the ping is displayed on-screen for.
+	/// </summary>
+	private float lifetime = 4.0f;
+	private Text pingName = null;
+
+	public void SetPing(PingInfo pingInfo) {
+		pingName.text = pingInfo.ObjectName;
+	}
+
+	private void Awake() {
+		pingName = GetComponent<Text>();
+	}
+
+	private void Update() {
+		DestructionTimer();
+	}
+
+	/// <summary>
+	/// Counts down to zero and destroys the game-object this script is 
+	/// attached to when the countdown is reached.
+	/// </summary>
+	private void DestructionTimer() {
+		lifetime -= Time.deltaTime;
+
+		if (lifetime <= 0) {
+			Destroy(gameObject);
 		}
 	}
 }
