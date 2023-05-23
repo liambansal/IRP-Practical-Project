@@ -4,14 +4,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using static Task;
 
 /// <summary>
 /// The decision making process that will control what actions an AI agent 
 /// performs to fulfill their order(s).
 /// </summary>
-public class HierarchicalTaskNetwork : MonoBehaviour {
+public class HierarchicalTaskNetwork {
 	private Task goal = null;
 	private Task[] goals = null;
 	private Task currentTaskToExecute = null;

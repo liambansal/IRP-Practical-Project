@@ -1,15 +1,14 @@
 // Written by Liam Bansal
 // Date Created: 9/5/2023
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using StarterAssets;
 
 /// <summary>
 /// Makes the camera follow the player game-object.
 /// </summary>
 public class CustomCamera : MonoBehaviour {
-	private Player player = null;
+	private ThirdPersonController player = null;
 	private Vector3 offset = Vector3.zero;
 
 	private void Start() {
@@ -22,7 +21,7 @@ public class CustomCamera : MonoBehaviour {
 	}
 
 	private void FindComponents() {
-		player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+		player = GameObject.FindGameObjectWithTag("Player").GetComponent<ThirdPersonController>();
 	}
 
 	private void FollowPlayer() {
