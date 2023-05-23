@@ -9,5 +9,18 @@ using UnityEngine;
 /// A UI element that temporarily displays an image above targeted game-object.
 /// </summary>
 public class Ping : MonoBehaviour {
-	 
+	/// <summary>
+	/// An interface containing all the relevant information about a
+	/// game-object to populate it's ping UI element.
+	/// </summary>
+	public interface PingInfo {
+		public string ObjectName {
+			get;
+			set;
+		}
+		public Vector3 WorldPosition {
+			get;
+			set;
+		}
+	}
 }
