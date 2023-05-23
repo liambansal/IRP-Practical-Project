@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 /// <summary>
 /// A collection of tasks to be executed in a sequence.
-/// Aimed to be used by a HTN.
 /// </summary>
 public class CompoundTask : Task {
 	private Stack<Task> subtasks = null;

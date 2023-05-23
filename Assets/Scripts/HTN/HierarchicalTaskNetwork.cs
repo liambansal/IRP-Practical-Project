@@ -73,7 +73,7 @@ public class HierarchicalTaskNetwork : MonoBehaviour {
 		}
 
 		OrderTasks(GetValidTasks(goal, executableTasks));
-		SetPlan();
+		SetPlan(goal);
 	}
 
 	/// <summary>

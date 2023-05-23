@@ -4,6 +4,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// A task class that holds a delegate for executing a single action.
+/// </summary>
 public class PrimitiveTask : Task {
 	public delegate TaskState Method();
 
@@ -21,6 +24,10 @@ public class PrimitiveTask : Task {
 	}
 }
 
+/// <summary>
+/// A task class that holds a delegate for executing a single action with a 
+/// vector parameter.
+/// </summary>
 public class PrimitiveVectorTask : PrimitiveTask {
 	public delegate TaskState VectorMethod(Vector3 vector);
 
@@ -46,6 +53,10 @@ public class PrimitiveVectorTask : PrimitiveTask {
 	}
 }
 
+/// <summary>
+/// A task class that holds a delegate for executing a single action with an
+/// interactable parameter.
+/// </summary>
 public class PrimitiveTaskInteractable : PrimitiveTask {
 	public delegate TaskState InteractableMethod(Interactable interactable);
 
