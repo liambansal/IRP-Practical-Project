@@ -18,6 +18,10 @@ public class HierarchicalTaskNetwork {
 	private Task[] availableTasks = null;
 	private Task[] executableTasks = null;
 	private Stack<Task> plan = null;
+	/// <summary>
+	/// Used for sharing conditions values between different tasks.
+	/// </summary>
+	private List<Condition> conditionBlackboard = new List<Condition>();
 
 	public HierarchicalTaskNetwork(Task[] goals, Task[] availableTasks) {
 		this.goal = null;
@@ -84,7 +88,7 @@ public class HierarchicalTaskNetwork {
 		List<Task> validTasks = new List<Task>();
 
 		foreach (Task task in availableTasks) {
-			foreach (Task.Condition postCondition in task.Postconditions) {
+			foreach (Condition postCondition in task.Postconditions) {
 				// If a postcondition and precondition match then the
 				// available task satisfies the goal task.
 				if (goal.Preconditions.Contains(postCondition)) {

@@ -76,58 +76,58 @@ public class AIAgent : MonoBehaviour {
 
 		// Define the pre/postconditions in the order which they must be met first.
 		#region Follow Task
-		List<Condition> followPreconditions = new List<Condition> {
+		Condition[] followPreconditions = new Condition[] {
 			new Condition("See Object")
 		};
-		List<Condition> followPostconditions = new List<Condition> {
+		Condition[] followPostconditions = new Condition[] {
 			new Condition("In Position")
 		};
 		PrimitiveTask followTask = new PrimitiveTask(Follow, followPreconditions, followPostconditions);
 		#endregion
 		#region Move To Task
-		List<Condition> moveToPreconditions = new List<Condition> {
+		Condition[] moveToPreconditions = new Condition[] {
 			new Condition("Has Destination")
 		};
-		List<Condition> moveToPostconditions = new List<Condition> {
+		Condition[] moveToPostconditions = new Condition[] {
 			new Condition("In Position"),
 			new Condition("In Range")
 		};
 		PrimitiveVectorTask moveToTask = new PrimitiveVectorTask(MoveTo, Vector3.zero, moveToPreconditions, moveToPostconditions);
 		#endregion
 		#region PickupTask
-		List<Condition> pickupPreconditions = new List<Condition> {
+		Condition[] pickupPreconditions = new Condition[] {
 			new Condition("Not Holding Object"),
 			new Condition("See Object"),
 			new Condition("In Range")
 		};
-		List<Condition> pickupPostconditions = new List<Condition> {
+		Condition[] pickupPostconditions = new Condition[] {
 			new Condition("Holding Object")
 		};
 		PrimitiveTaskInteractable pickUpTask = new PrimitiveTaskInteractable(PickUp, pickupPreconditions, pickupPostconditions);
 		#endregion
 		#region Drop Task
-		List<Condition> dropPreconditions = new List<Condition> {
+		Condition[] dropPreconditions = new Condition[] {
 			new Condition("Holding Object")
 		};
-		List<Condition> dropPostconditions = new List<Condition> {
+		Condition[] dropPostconditions = new Condition[] {
 			new Condition("Not Holding Object")
 		};
 		PrimitiveTask dropTask = new PrimitiveTask(Drop, dropPreconditions, dropPostconditions);
 		#endregion
 		#region Stay Task
-		List<Condition> stayPreconditions = new List<Condition> {
+		Condition[] stayPreconditions = new Condition[] {
 			new Condition("Has Destination")
 		};
-		List<Condition> stayPostconditions = new List<Condition> {
+		Condition[] stayPostconditions = new Condition[] {
 			new Condition("In Position")
 		};
 		PrimitiveTask stayTask = new PrimitiveTask(Stay, stayPreconditions, stayPostconditions);
 		#endregion
 		#region Look Around Task
-		List<Condition> lookAroundPreconditions = new List<Condition> {
+		Condition[] lookAroundPreconditions = new Condition[] {
 			new Condition("In Position")
 		};
-		List<Condition> lookAroundPostconditions = new List<Condition> {
+		Condition[] lookAroundPostconditions = new Condition[] {
 			new Condition("See Object")
 		};
 		PrimitiveTask lookAroundTask = new PrimitiveTask(Stay, lookAroundPreconditions, lookAroundPostconditions);

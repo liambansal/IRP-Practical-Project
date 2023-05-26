@@ -9,8 +9,8 @@ using System.Collections.Generic;
 public class CompoundTask : Task {
 	private Stack<Task> subtasks = null;
 
-	public CompoundTask(List<Condition> preconditions,
-		List<Condition> postconditions,
+	public CompoundTask(Condition[] preconditions,
+		Condition[] postconditions,
 		Stack<Task> subtasks) : base(preconditions,
 		postconditions) {
 		Preconditions = preconditions;

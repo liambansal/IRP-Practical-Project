@@ -16,8 +16,8 @@ public class PrimitiveTask : Task {
 	}
 
 	public PrimitiveTask(Method task,
-		List<Condition> preconditions,
-		List<Condition> postconditions) : base(preconditions,
+		Condition[] preconditions,
+		Condition[] postconditions) : base(preconditions,
 			postconditions) {
 		Preconditions = preconditions;
 		Postconditions = postconditions;
@@ -42,8 +42,8 @@ public class PrimitiveVectorTask : PrimitiveTask {
 
 	public PrimitiveVectorTask(VectorMethod task,
 		Vector3 vector,
-		List<Condition> preconditions,
-		List<Condition> postconditions) : base(null,
+		Condition[] preconditions,
+		Condition[] postconditions) : base(null,
 			preconditions,
 			postconditions) {
 		Task = task;
@@ -70,8 +70,8 @@ public class PrimitiveTaskInteractable : PrimitiveTask {
 	}
 
 	public PrimitiveTaskInteractable(InteractableMethod task,
-		List<Condition> preconditions,
-		List<Condition> postconditions) : base(null,
+		Condition[] preconditions,
+		Condition[] postconditions) : base(null,
 			preconditions,
 			postconditions) {
 		Task = task;
