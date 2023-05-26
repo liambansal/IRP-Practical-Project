@@ -81,11 +81,11 @@ public class Task {
 	public static bool MissingCondition(Condition[] requiredConditions, Condition[] otherConditions) {
 		foreach (Condition condition in requiredConditions) {
 			if (!otherConditions.Contains(condition)) {
-				return false;
+				return true;
 			}
 		}
 
-		return true;
+		return false;
 	}
 
 	public static Condition[] GatherConditions(Task[] tasks, ConditionLists conditionListType) {

@@ -75,56 +75,56 @@ public class HierarchicalTaskNetwork {
 			plan.Clear();
 		}
 
-		DecomposePlan(goal, accessibleTasks);
+		plan = DecomposeTask(goal, accessibleTasks);
 	}
 
 	/// <summary>
 	/// Creates a stack of tasks to be executed in order to achieve the goal 
 	/// task.
 	/// </summary>
-	/// <param name="goalTask"> The task to create a plan for. </param>
+	/// <param name="taskToDecompose"> The task to create a plan for. </param>
 	/// <returns> The stack of subtasks that acheive the goal. </returns>
-	private Task DecomposePlan(Task goalTask, Task[] availableTasks) {
+	private Stack<Task> DecomposeTask(Task taskToDecompose, Task[] availableTasks) {
 		OrderTasks(ref availableTasks);
-		// Remove all tasks that don't satisfy the goal tasks preconditions
-		Task[] validTasks = GetValidTasks(goalTask, availableTasks);
-		List<Task> plan = new List<Task>();
+		// Gets the tasks that only satisfy the preconditions of the task to decompose.
+		Task[] validTasks = GetValidTasks(taskToDecompose, availableTasks);
+		Stack<Task> plan = new Stack<Task>();
 
 		// Get the task(s) that solve the goal tasks preconditions and add to a stack
 		// loop over tasks that meet the goals preconditions
 		foreach (Task task in validTasks) {
-			// add current task
-			plan.Add(task);
+			plan.Push(task);
 			Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
 
 			if (!MissingCondition(goal.Preconditions, planPostconditions)) {
 				// All the goal's preconditions have been addressed, break.
 				break;
 			} else {
-				// remove other tasks that only share the same postconditions and have no more
-				// con.
+				// TODO: remove other tasks that only share the same postconditions and have no more
 				continue;
 			}
 		}
 
 		// loop over the planned tasks to check all preconditions have been addressed
 
-
 		// if all new tasks' preconditions are met
-			// add them as a plan
-		// else 
-		// foreach task
-			// if precons not met && no subtasks exist
-				// repeat above process for all new tasks by CallingAboveMethod() and pass the subTask as a parameter
-				// task.subtasks = AboveMethod();
-
-		// How would you resolve this so the tasks are executed in the correct order?
-		// (if the postcondition of one task, on the same level of depth, satisfies the precondition of another task,
-		// then it must be executed first?)
+		if (true) {
+			plan.Reverse();
+			return plan;
+		} else {
+			// foreach task
+				// if precons not met && no subtasks exist
+					// repeat above process for all new tasks by CallingAboveMethod() and pass the subTask as a parameter
+					// task.subtasks = AboveMethod();
+		}
 
 		return null;
 
 		// NOTES:
+		// How would you resolve this so the tasks are executed in the correct order?
+		// (if the postcondition of one task, on the same level of depth, satisfies the precondition of another task,
+		// then it must be executed first?)
+
 		// goal: pickup cube
 		// pickup cube (precon = seeCube && inRange)
 			// find cube (compound) (postCon seeCube)
@@ -150,8 +150,8 @@ public class HierarchicalTaskNetwork {
 	}
 
 	/// <summary>
-	/// Returns an array of tasks that completely or partiall satisfy the 
-	/// parameter goal task's preconditions.
+	/// Returns an array of tasks that completely or partially satisfy the 
+	/// parameter task's preconditions.
 	/// </summary>
 	/// <returns></returns>
 	private Task[] GetValidTasks(Task goalTask, Task[] availableTasks) {
@@ -161,7 +161,7 @@ public class HierarchicalTaskNetwork {
 			foreach (Condition postCondition in task.Postconditions) {
 				// If a postcondition and precondition match then the
 				// available task satisfies the goal task.
-				if (goal.Preconditions.Contains(postCondition)) {
+				if (goalTask.Preconditions.Contains(postCondition)) {
 					validTasks.Add(task);
 				}
 			}

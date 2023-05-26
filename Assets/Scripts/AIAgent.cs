@@ -132,7 +132,7 @@ public class AIAgent : MonoBehaviour {
 		Condition[] lookAroundPostconditions = new Condition[] {
 			new Condition("See Object")
 		};
-		PrimitiveTask lookAroundTask = new PrimitiveTask(Stay, lookAroundPreconditions, lookAroundPostconditions);
+		PrimitiveTask lookAroundTask = new PrimitiveTask(LookAround, lookAroundPreconditions, lookAroundPostconditions);
 		#endregion
 
 		Task[] networkTasks = new Task[] {
@@ -187,6 +187,17 @@ public class AIAgent : MonoBehaviour {
 	}
 
 	/// <summary>
+	/// Makes the AI agent stay in place at it's current position.
+	/// </summary>
+	private TaskState Stay() {
+		return TaskState.Finished;
+	}
+
+	private TaskState LookAround() {
+		return TaskState.Finished;
+	}
+
+	/// <summary>
 	/// Makes the AI agent pick up the specified interactable.
 	/// </summary>
 	/// <param name="objectToPickUp"> The interactable that the AI agent will pick up. </param>
@@ -198,13 +209,6 @@ public class AIAgent : MonoBehaviour {
 	/// Makes the AI agent drop the interactable it's currently holding.
 	/// </summary>
 	private TaskState Drop() {
-		return TaskState.Finished;
-	}
-
-	/// <summary>
-	/// Makes the AI agent stay in place at it's current position.
-	/// </summary>
-	private TaskState Stay() {
 		return TaskState.Finished;
 	}
 	#endregion

@@ -19,6 +19,7 @@ public class PrimitiveTask : Task {
 		Condition[] preconditions,
 		Condition[] postconditions) : base(preconditions,
 			postconditions) {
+		Task = task;
 		Preconditions = preconditions;
 		Postconditions = postconditions;
 	}
