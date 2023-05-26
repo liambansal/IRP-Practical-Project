@@ -149,6 +149,7 @@ public class HierarchicalTaskNetwork {
 		// TODO: if two tasks are on par then order them by something else...
 	}
 
+	// TODO: add a task even if it's condition only partially matches.
 	/// <summary>
 	/// Returns an array of tasks that completely or partially satisfy the 
 	/// parameter task's preconditions.
@@ -178,7 +179,7 @@ public class HierarchicalTaskNetwork {
 		// Does the HTN have no goal?
 		if (goal == null||
 			// Has the HTN's goal been achieved?
-			(currentTaskState == TaskState.Finished && plan.Count == 0) ||
+			(currentTaskState == TaskState.Succeeded && plan.Count == 0) ||
 			// Is there no plan?
 			plan.Count == 0) {
 			return;
@@ -188,22 +189,51 @@ public class HierarchicalTaskNetwork {
 			currentTaskToExecute = plan.Pop();
 		}
 
-		// TODO: check tasks pre-conditions are met before executing it.
-		if (currentTaskToExecute != null) {
-			// TODO: start executing action...
-			if (currentTaskToExecute is PrimitiveTask) {
-				(currentTaskToExecute as PrimitiveTask).Task();
-			} else if (currentTaskToExecute is PrimitiveTask) {
-				(currentTaskToExecute as PrimitiveVectorTask).Task((currentTaskToExecute as PrimitiveVectorTask).Vector);
-			} else if (currentTaskToExecute is PrimitiveTask) {
-				(currentTaskToExecute as PrimitiveTaskInteractable).Task((currentTaskToExecute as PrimitiveTaskInteractable).Interactable);
-			} else if (currentTaskToExecute is PrimitiveTask) {
-				//(currentTaskToExecute as CompoundTaskClass).Task();
-			}
+		// Checks the task is executable.
+		if (!currentTaskToExecute.AllConditionsSatisfied(currentTaskToExecute.Preconditions)) {
+			// TODO: re-evaluate plan.
+			return;
+		}
 
-			// continue executing action...
-			// if completed go to next action...
-			// if cancelled check plan is still valid...
+		TaskState currentTaskTask = TaskState.NotStarted;
+
+		if (currentTaskToExecute is PrimitiveTask) {
+			currentTaskTask = (currentTaskToExecute as PrimitiveTask).Task();
+		} else if (currentTaskToExecute is PrimitiveVectorTask) {
+			currentTaskTask = (currentTaskToExecute as PrimitiveVectorTask).Task((currentTaskToExecute as PrimitiveVectorTask).Vector);
+		} else if (currentTaskToExecute is PrimitiveInteractableTask) {
+			currentTaskTask = (currentTaskToExecute as PrimitiveInteractableTask).Task((currentTaskToExecute as PrimitiveInteractableTask).Interactable);
+		} else if (currentTaskToExecute is CompoundTask) {
+			// TODO: call method belonging to CompoundTask that executes
+			// the subtasks one by one.
+		}
+
+		switch (currentTaskTask) {
+			case TaskState.NotStarted: {
+				break;
+			}
+			case TaskState.Started: {
+				break;
+			}
+			case TaskState.Executing: {
+				break;
+			}
+			case TaskState.Succeeded: {
+				// TODO: enable all postconditions.
+				currentTaskToExecute = plan.Pop();
+				break;
+			}
+			case TaskState.Failed: {
+				// TODO: check plan is still valid and try again.
+				break;
+			}
+			case TaskState.Cancelled: {
+				// TODO: check plan is still valid and try again.
+				break;
+			}
+			default: {
+				break;
+			}
 		}
 	}
 }

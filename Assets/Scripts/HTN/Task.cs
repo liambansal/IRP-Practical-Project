@@ -22,7 +22,8 @@ public class Task {
 		NotStarted,
 		Started,
 		Executing,
-		Finished,
+		Succeeded,
+		Failed,
 		Cancelled
 	}
 
@@ -64,6 +65,16 @@ public class Task {
 		Condition[] postconditions) {
 		this.preconditions = preconditions;
 		this.postconditions = postconditions;
+	}
+
+	public bool AllConditionsSatisfied(Condition[] conditions) {
+		foreach (Condition condition in conditions) {
+			if (!condition.satisfied) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	public static int MatchingConditions(Condition[] firstConditions, Condition[] secondConditions) {

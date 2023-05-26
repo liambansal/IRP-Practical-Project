@@ -58,7 +58,7 @@ public class PrimitiveVectorTask : PrimitiveTask {
 /// A task class that holds a delegate for executing a single action with an
 /// interactable parameter.
 /// </summary>
-public class PrimitiveTaskInteractable : PrimitiveTask {
+public class PrimitiveInteractableTask : PrimitiveTask {
 	public delegate TaskState InteractableMethod(Interactable interactable);
 
 	public InteractableMethod Task {
@@ -70,7 +70,7 @@ public class PrimitiveTaskInteractable : PrimitiveTask {
 		protected set;
 	}
 
-	public PrimitiveTaskInteractable(InteractableMethod task,
+	public PrimitiveInteractableTask(InteractableMethod task,
 		Condition[] preconditions,
 		Condition[] postconditions) : base(null,
 			preconditions,

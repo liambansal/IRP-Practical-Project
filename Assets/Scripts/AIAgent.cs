@@ -105,7 +105,7 @@ public class AIAgent : MonoBehaviour {
 		Condition[] pickupPostconditions = new Condition[] {
 			new Condition("Holding Object")
 		};
-		PrimitiveTaskInteractable pickUpTask = new PrimitiveTaskInteractable(PickUp, pickupPreconditions, pickupPostconditions);
+		PrimitiveInteractableTask pickUpTask = new PrimitiveInteractableTask(PickUp, pickupPreconditions, pickupPostconditions);
 		#endregion
 		#region Drop Task
 		Condition[] dropPreconditions = new Condition[] {
@@ -175,7 +175,7 @@ public class AIAgent : MonoBehaviour {
 	/// Makes the AI agent follow the player.
 	/// </summary>
 	private TaskState Follow() {
-		return TaskState.Finished;
+		return TaskState.Succeeded;
 	}
 
 	/// <summary>
@@ -183,18 +183,18 @@ public class AIAgent : MonoBehaviour {
 	/// </summary>
 	/// <param name="targetStandPosition"> The position where the AI agent will move to. </param>
 	private TaskState MoveTo(Vector3 targetStandPosition) {
-		return TaskState.Finished;
+		return TaskState.Succeeded;
 	}
 
 	/// <summary>
 	/// Makes the AI agent stay in place at it's current position.
 	/// </summary>
 	private TaskState Stay() {
-		return TaskState.Finished;
+		return TaskState.Succeeded;
 	}
 
 	private TaskState LookAround() {
-		return TaskState.Finished;
+		return TaskState.Succeeded;
 	}
 
 	/// <summary>
@@ -202,14 +202,14 @@ public class AIAgent : MonoBehaviour {
 	/// </summary>
 	/// <param name="objectToPickUp"> The interactable that the AI agent will pick up. </param>
 	private TaskState PickUp(Interactable objectToPickUp) {
-		return TaskState.Finished;
+		return TaskState.Succeeded;
 	}
 
 	/// <summary>
 	/// Makes the AI agent drop the interactable it's currently holding.
 	/// </summary>
 	private TaskState Drop() {
-		return TaskState.Finished;
+		return TaskState.Succeeded;
 	}
 	#endregion
 }
