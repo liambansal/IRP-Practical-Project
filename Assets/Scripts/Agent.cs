@@ -18,6 +18,14 @@ public class Agent : MonoBehaviour, Interactable.PickupOperator {
 	/// </summary>
 	protected Interactable currentInteractable = null;
 
+	protected virtual void Awake() { }
+
+	protected virtual void Start() { }
+
+	protected virtual void Update() {
+		MoveHeldObject();
+	}
+
 	/// <summary>
 	/// Makes the agent pickup the specified interactable.
 	/// </summary>
@@ -45,5 +53,14 @@ public class Agent : MonoBehaviour, Interactable.PickupOperator {
 		}
 
 		return TaskState.Failed;
+	}
+
+	/// <summary>
+	/// Moves the agent's held object to their pickup point.
+	/// </summary>
+	private void MoveHeldObject() {
+		if (currentInteractable) {
+			currentInteractable.transform.position = pickupPoint.position;
+		}
 	}
 }

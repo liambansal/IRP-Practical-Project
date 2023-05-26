@@ -31,16 +31,19 @@ public class AIAgent : Agent {
 
 	private Player player = null;
 
-	private void Awake() {
+	protected override void Awake() {
+		base.Awake();
 		GetComponents();
 		CreateHierarchicalTaskNetwork();
 	}
 
-	private void Start() {
+	protected override void Start() {
+		base.Start();
 		FindComponents();
 	}
 
-	private void Update() {
+	protected override void Update() {
+		base.Update();
 		UpdateHTN();
 	}
 
