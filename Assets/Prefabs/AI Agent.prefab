@@ -1990,7 +1990,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b45a7dc5a71233c418ae744feb1f8b2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  followDistance: 3
+  followDistance: 2
 --- !u!1 &7150211093180269757
 GameObject:
   m_ObjectHideFlags: 0

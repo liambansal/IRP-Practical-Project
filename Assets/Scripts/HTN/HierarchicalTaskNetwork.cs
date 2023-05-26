@@ -97,6 +97,8 @@ public class HierarchicalTaskNetwork {
 			Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
 
 			if (!MissingCondition(goal.Preconditions, planPostconditions)) {
+				// Remeber to add the original task to execute.
+				plan.Push(taskToDecompose);
 				// All the goal's preconditions have been addressed, break.
 				break;
 			} else {
@@ -109,7 +111,15 @@ public class HierarchicalTaskNetwork {
 
 		// if all new tasks' preconditions are met
 		if (true) {
-			plan.Reverse();
+			Task[] planCopy = plan.ToArray();
+			plan.Clear();
+
+			for (int i = 0; i < planCopy.Length; ++i) {
+				// Pushing each element from the array onto a stack reverses
+				// the order of the collection.
+				plan.Push(planCopy[i]);
+			}
+
 			return plan;
 		} else {
 			// foreach task
@@ -179,7 +189,7 @@ public class HierarchicalTaskNetwork {
 		// Does the HTN have no goal?
 		if (goal == null||
 			// Has the HTN's goal been achieved?
-			(currentTaskState == TaskState.Succeeded && plan.Count == 0) ||
+			(this.currentTaskState == TaskState.Succeeded && plan.Count == 0) ||
 			// Is there no plan?
 			plan.Count == 0) {
 			return;
@@ -190,25 +200,25 @@ public class HierarchicalTaskNetwork {
 		}
 
 		// Checks the task is executable.
-		if (!currentTaskToExecute.AllConditionsSatisfied(currentTaskToExecute.Preconditions)) {
-			// TODO: re-evaluate plan.
-			return;
-		}
+		//if (!currentTaskToExecute.AllConditionsSatisfied(currentTaskToExecute.Preconditions)) {
+		//	// TODO: append more tasks to satisfy the current tasks preconditions.
+		//	return;
+		//}
 
-		TaskState currentTaskTask = TaskState.NotStarted;
+		TaskState currentTaskState = TaskState.NotStarted;
 
 		if (currentTaskToExecute is PrimitiveTask) {
-			currentTaskTask = (currentTaskToExecute as PrimitiveTask).Task();
+			currentTaskState = (currentTaskToExecute as PrimitiveTask).Task();
 		} else if (currentTaskToExecute is PrimitiveVectorTask) {
-			currentTaskTask = (currentTaskToExecute as PrimitiveVectorTask).Task((currentTaskToExecute as PrimitiveVectorTask).Vector);
+			currentTaskState = (currentTaskToExecute as PrimitiveVectorTask).Task((currentTaskToExecute as PrimitiveVectorTask).Vector);
 		} else if (currentTaskToExecute is PrimitiveInteractableTask) {
-			currentTaskTask = (currentTaskToExecute as PrimitiveInteractableTask).Task((currentTaskToExecute as PrimitiveInteractableTask).Interactable);
+			currentTaskState = (currentTaskToExecute as PrimitiveInteractableTask).Task((currentTaskToExecute as PrimitiveInteractableTask).Interactable);
 		} else if (currentTaskToExecute is CompoundTask) {
 			// TODO: call method belonging to CompoundTask that executes
 			// the subtasks one by one.
 		}
 
-		switch (currentTaskTask) {
+		switch (currentTaskState) {
 			case TaskState.NotStarted: {
 				break;
 			}
@@ -218,17 +228,24 @@ public class HierarchicalTaskNetwork {
 			case TaskState.Executing: {
 				break;
 			}
+			// Enables all of the current task's postconditions.
 			case TaskState.Succeeded: {
-				// TODO: enable all postconditions.
-				currentTaskToExecute = plan.Pop();
+				for (int i = 0; i < currentTaskToExecute.Postconditions.Length; ++i) {
+					currentTaskToExecute.ChangeCondition(ConditionLists.Postconditions,
+						currentTaskToExecute.Postconditions[i].name,
+						"",
+						true);
+				}
+
+				currentTaskToExecute = null;
 				break;
 			}
 			case TaskState.Failed: {
-				// TODO: check plan is still valid and try again.
+				// TODO: check plan is still valid and try the task again.
 				break;
 			}
 			case TaskState.Cancelled: {
-				// TODO: check plan is still valid and try again.
+				// TODO: check plan is still valid and try the task again.
 				break;
 			}
 			default: {

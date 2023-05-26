@@ -18,8 +18,7 @@ public class AIAgent : MonoBehaviour {
 	private bool moveDestinationSet = false;
 	[SerializeField, Tooltip("The desired distance between the player and " +
 		"AI agent when it's following them.")]
-	private int followDistance = 3;
-	private Vector3 followDestination = Vector3.zero;
+	private float followDistance = 2.0f;
 	/// <summary>
 	/// The position where the AI will aim to move to next.
 	/// It isn't constanly the same as the nav mesh agent's destination.
@@ -175,7 +174,21 @@ public class AIAgent : MonoBehaviour {
 	/// Makes the AI agent follow the player.
 	/// </summary>
 	private TaskState Follow() {
-		return TaskState.Succeeded;
+		if (!navMeshAgent.isOnNavMesh) {
+			return TaskState.Failed;
+		}
+
+		if (!moveDestinationSet) {
+			Vector3 targetDirection = (player.transform.position - transform.position).normalized;
+			Vector3 targetDestination = player.transform.position - targetDirection * followDistance;
+			moveDestinationSet = navMeshAgent.SetDestination(targetDestination);
+		}
+
+		if (!navMeshAgent.hasPath && navMeshAgent.pathPending == false) {
+			return TaskState.Succeeded;
+		}
+
+		return TaskState.Executing;
 	}
 
 	/// <summary>
