@@ -19,7 +19,7 @@ public class AIAgent : MonoBehaviour {
 	#region Movement
 	private bool moveDestinationSet = false;
 	[SerializeField, Tooltip("The desired distance between the player and " +
-		"AI agent when following them.")]
+		"AI agent when it's following them.")]
 	private int followDistance = 3;
 	private Vector3 followDestination = Vector3.zero;
 	/// <summary>

@@ -2,7 +2,7 @@
 // Date Created: 9/5/2023
 
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 /// <summary>
 /// A UI element that temporarily displays an image above targeted game-object.
@@ -27,14 +27,14 @@ public class Ping : MonoBehaviour {
 	/// How long in seconds the ping is displayed on-screen for.
 	/// </summary>
 	private float lifetime = 4.0f;
-	private TextElement pingName = null;
+	private Text pingName = null;
 
 	public void SetPing(PingInfo pingInfo) {
 		pingName.text = pingInfo.ObjectName;
 	}
 
 	private void Awake() {
-		pingName = GetComponent<TextElement>();
+		pingName = GetComponent<Text>();
 	}
 
 	private void Update() {
