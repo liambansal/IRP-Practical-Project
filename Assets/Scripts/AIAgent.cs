@@ -9,12 +9,7 @@ using static Task;
 /// An autonomous agent that follows orders given by the player, but also 
 /// makes their own decisions when no order are given.
 /// </summary>
-public class AIAgent : MonoBehaviour, Interactable.PickupOperator {
-	public Transform PickupPoint {
-		get { return pickupPoint; }
-		set { }
-	}
-
+public class AIAgent : Agent {
 	#region Sensor Variables
 	private VisualSensor visualSensor = null;
 	#endregion
@@ -35,14 +30,6 @@ public class AIAgent : MonoBehaviour, Interactable.PickupOperator {
 	private HierarchicalTaskNetwork hierarchicalTaskNetwork = null;
 
 	private Player player = null;
-
-	[SerializeField, Tooltip("The transform whose position will decide where " +
-		"this agent hold's interactable game-objects.")]
-	private Transform pickupPoint = null;
-	/// <summary>
-	/// The interactable game-object the AI agent is currently holding onto.
-	/// </summary>
-	private Interactable currentInteractable = null;
 
 	private void Awake() {
 		GetComponents();
@@ -112,7 +99,7 @@ public class AIAgent : MonoBehaviour, Interactable.PickupOperator {
 		Condition[] pickupPostconditions = new Condition[] {
 			new Condition("Holding Object")
 		};
-		PrimitiveInteractableTask pickUpTask = new PrimitiveInteractableTask(PickUp, pickupPreconditions, pickupPostconditions);
+		PrimitiveInteractableTask pickUpTask = new PrimitiveInteractableTask(PickupObject, pickupPreconditions, pickupPostconditions);
 		#endregion
 		#region Drop Task
 		Condition[] dropPreconditions = new Condition[] {
@@ -121,7 +108,7 @@ public class AIAgent : MonoBehaviour, Interactable.PickupOperator {
 		Condition[] dropPostconditions = new Condition[] {
 			new Condition("Not Holding Object")
 		};
-		PrimitiveTask dropTask = new PrimitiveTask(Drop, dropPreconditions, dropPostconditions);
+		PrimitiveTask dropTask = new PrimitiveTask(DropObject, dropPreconditions, dropPostconditions);
 		#endregion
 		#region Stay Task
 		Condition[] stayPreconditions = new Condition[] {
@@ -240,35 +227,6 @@ public class AIAgent : MonoBehaviour, Interactable.PickupOperator {
 	private TaskState LookAround() {
 		// TODO: make the AI look around them by turning their head.
 		return TaskState.Succeeded;
-	}
-
-	/// <summary>
-	/// Makes the AI agent pick up the specified interactable.
-	/// </summary>
-	/// <param name="objectToPickUp"> The interactable that the AI agent will pick up. </param>
-	private TaskState PickUp(Interactable objectToPickUp) {
-		if (objectToPickUp.Pickup(this, true)) {
-			currentInteractable = objectToPickUp;
-			return TaskState.Succeeded;
-		}
-		
-		return TaskState.Failed;
-	}
-
-	/// <summary>
-	/// Makes the AI agent drop the interactable it's currently holding.
-	/// </summary>
-	private TaskState Drop() {
-		if (!currentInteractable) {
-			return TaskState.Succeeded;
-		}
-
-		if (currentInteractable.Pickup(this, false)) {
-			currentInteractable = null;
-			return TaskState.Succeeded;
-		}
-		
-		return TaskState.Failed;
 	}
 	#endregion
 
