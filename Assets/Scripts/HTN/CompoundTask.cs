@@ -17,4 +17,6 @@ public class CompoundTask : Task {
 		Postconditions = postconditions;
 		this.subtasks = subtasks;
 	}
+
+	// TODO: create a method that executes subtasks one by one.
 }

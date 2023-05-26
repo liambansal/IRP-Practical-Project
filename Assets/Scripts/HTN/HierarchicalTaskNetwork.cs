@@ -1,7 +1,6 @@
 // Written by Liam Bansal
 // Date Created: 9/5/2023
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using static Task;
@@ -12,23 +11,28 @@ using static Task;
 /// </summary>
 public class HierarchicalTaskNetwork {
 	private Task goal = null;
+	/// <summary>
+	/// A collection of tasks which the hierarchical task network can choose 
+	/// from to set a goal to achieve.
+	/// </summary>
 	private Task[] goals = null;
 	private Task currentTaskToExecute = null;
 	private TaskState currentTaskState = TaskState.NotStarted;
-	private Task[] availableTasks = null;
-	private Task[] executableTasks = null;
+	/// <summary>
+	/// An array of tasks that can be used by the hierarchical task network.
+	/// </summary>
+	private Task[] accessibleTasks = null;
 	private Stack<Task> plan = null;
 	/// <summary>
-	/// Used for sharing conditions values between different tasks.
+	/// Used for sharing conditions between different tasks.
 	/// </summary>
 	private List<Condition> conditionBlackboard = new List<Condition>();
 
-	public HierarchicalTaskNetwork(Task[] goals, Task[] availableTasks) {
+	public HierarchicalTaskNetwork(Task[] goals, Task[] accessibleTasks) {
 		this.goal = null;
 		this.goals = goals;
 		this.currentTaskToExecute = null;
-		this.availableTasks = availableTasks;
-		this.executableTasks = new Task[availableTasks.Length];
+		this.accessibleTasks = accessibleTasks;
 		this.plan = new Stack<Task>();
 	}
 
@@ -42,7 +46,7 @@ public class HierarchicalTaskNetwork {
 		CreatePlan();
 	}
 
-	private void Update() {
+	public void Update() {
 		FindGoal();
 		ExecutePlan();
 	}
@@ -61,11 +65,7 @@ public class HierarchicalTaskNetwork {
 		}
 	}
 
-	private void FindExecuteableActions() {
-		// TODO: check if any of the available tasks' preconditions are all
-		// met and add any valid tasks to an array.  
-	}
-
+	#region Creating a HTN Plan
 	private void CreatePlan() {
 		if (goal == null) {
 			return;
@@ -75,40 +75,7 @@ public class HierarchicalTaskNetwork {
 			plan.Clear();
 		}
 
-		OrderTasks(GetValidTasks(goal, executableTasks));
-		SetPlan(goal);
-	}
-
-	/// <summary>
-	/// Returns an array of tasks that completely or partiall satisfy the 
-	/// parameter goal task's preconditions.
-	/// </summary>
-	/// <returns></returns>
-	private Task[] GetValidTasks(Task goalTask, Task[] availableTasks) {
-		List<Task> validTasks = new List<Task>();
-
-		foreach (Task task in availableTasks) {
-			foreach (Condition postCondition in task.Postconditions) {
-				// If a postcondition and precondition match then the
-				// available task satisfies the goal task.
-				if (goal.Preconditions.Contains(postCondition)) {
-					validTasks.Add(task);
-				}
-			}
-		}
-
-		return validTasks.ToArray();
-	}
-
-	/// <summary>
-	/// Orders the tasks by which one is the most optimal to execute first.
-	/// </summary>
-	private void OrderTasks(Task[] tasks) {
-		List<Task> orderedTasks = new List<Task>();
-
-		// TODO: order tasks by which one is the most effective to execute
-		//orderedTasks = tasks.OrderBy(task => task.Postconditions);
-		// TODO: if two tasks are on par then order them by something else...
+		DecomposePlan(goal, accessibleTasks);
 	}
 
 	/// <summary>
@@ -117,32 +84,31 @@ public class HierarchicalTaskNetwork {
 	/// </summary>
 	/// <param name="goalTask"> The task to create a plan for. </param>
 	/// <returns> The stack of subtasks that acheive the goal. </returns>
-	private Task SetPlan(Task goalTask) {
-		// order the available tasks by which one's postconditions satisfies the goal tasks' preconditions best,
-		// and set them in the same order as the goal tasks preconditions e.g. goal precons =
-		// seeObject, inRange. Then subtasks should be in oder of (seeObject, inRange), (inRange, otherPostcon, seeObject)
-		// seeObject, (otherPostCon, seeObject), inRange, (inRange, otherPostcon).
-		availableTasks = availableTasks.OrderBy(task => goalTask.Preconditions).ToArray();
-
+	private Task DecomposePlan(Task goalTask, Task[] availableTasks) {
+		OrderTasks(ref availableTasks);
 		// Remove all tasks that don't satisfy the goal tasks preconditions
-		foreach (Condition precondition in goalTask.Preconditions) {
-			foreach (Task task in availableTasks) {
-				if (!task.Postconditions.Contains(precondition)) {
-					// remove task here.
-				}
+		Task[] validTasks = GetValidTasks(goalTask, availableTasks);
+		List<Task> plan = new List<Task>();
+
+		// Get the task(s) that solve the goal tasks preconditions and add to a stack
+		// loop over tasks that meet the goals preconditions
+		foreach (Task task in validTasks) {
+			// add current task
+			plan.Add(task);
+			Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
+
+			if (!MissingCondition(goal.Preconditions, planPostconditions)) {
+				// All the goal's preconditions have been addressed, break.
+				break;
+			} else {
+				// remove other tasks that only share the same postconditions and have no more
+				// con.
+				continue;
 			}
 		}
 
-		// Get the task(s) that solve the goal tasks preconditions and add to a stack
-			// loop over tasks that meet the goals preconditions
-				// add current task
+		// loop over the planned tasks to check all preconditions have been addressed
 
-				// if goal tasks preconditions are all met, break.
-				// else 
-				// remove other tasks that only share the same postconditions and have no more
-				// continue
-
-		// loop over tasks to check all preconditions are met
 
 		// if all new tasks' preconditions are met
 			// add them as a plan
@@ -167,19 +133,43 @@ public class HierarchicalTaskNetwork {
 				// look around (precon = inPosition, postcon = seeCube)
 			// move to cube (precon = seeCube, postcon = inRange)
 
-
-
-		// ! OLD COMMENT - Can remove once method works !
-		//// TODO: go through ordered tasks until a set that satisfies all preconditions is found.
-		//// (whichever set of tasks complete the preconditions in the fewest steps).
-		//	// TODO: if a task doesn't satisfy the goal's preconditions by itself
-		//	// then look for other tasks that satisfy the other conditions. May need
-		//	// to call GetTasks again, but remvove the tasks that have already been
-		//	// evaluated here.
-		//	// TODO: if a task is added to the set, remove all other ordered tasks
-		//	// that only satisfy preconditions already found in the set.
-		//// TODO: push all required tasks onto the plan stack.
+		// TODO: add a bias for tasks that have their postconditions matching
+		// the order of the goal tasks preconditions.
 	}
+
+	/// <summary>
+	/// Orders the tasks by which one is the most optimal to execute first.
+	/// </summary>
+	private void OrderTasks(ref Task[] tasks) {
+		// order the available tasks by which one's postconditions satisfies the goal tasks' preconditions best,
+		// and set them in the same order as the goal tasks preconditions e.g. goal precons =
+		// seeObject, inRange. Then subtasks should be in oder of (seeObject, inRange), (inRange, otherPostcon, seeObject)
+		// seeObject, (otherPostCon, seeObject), inRange, (inRange, otherPostcon).
+		tasks = tasks.OrderByDescending(task => MatchingConditions(task.Postconditions, goal.Preconditions)).ToArray();
+		// TODO: if two tasks are on par then order them by something else...
+	}
+
+	/// <summary>
+	/// Returns an array of tasks that completely or partiall satisfy the 
+	/// parameter goal task's preconditions.
+	/// </summary>
+	/// <returns></returns>
+	private Task[] GetValidTasks(Task goalTask, Task[] availableTasks) {
+		List<Task> validTasks = new List<Task>();
+
+		foreach (Task task in availableTasks) {
+			foreach (Condition postCondition in task.Postconditions) {
+				// If a postcondition and precondition match then the
+				// available task satisfies the goal task.
+				if (goal.Preconditions.Contains(postCondition)) {
+					validTasks.Add(task);
+				}
+			}
+		}
+
+		return validTasks.ToArray();
+	}
+	#endregion
 
 	/// <summary>
 	/// Executes the stack of tasks, one at a time, to complete the HTN's goal.
