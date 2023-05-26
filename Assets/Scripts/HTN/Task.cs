@@ -11,6 +11,11 @@ public class Task {
 	public struct Condition {
 		public string condition;
 		public bool satisfied;
+
+		public Condition(string condition) {
+			this.condition = condition;
+			satisfied = false;
+		}
 	}
 
 	public enum TaskState {

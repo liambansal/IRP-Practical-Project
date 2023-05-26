@@ -70,14 +70,21 @@ public class PrimitiveTaskInteractable : PrimitiveTask {
 	}
 
 	public PrimitiveTaskInteractable(InteractableMethod task,
-		Interactable interactable,
 		List<Condition> preconditions,
 		List<Condition> postconditions) : base(null,
 			preconditions,
 			postconditions) {
 		Task = task;
-		Interactable = interactable;
+		Interactable = null;
 		Preconditions = preconditions;
 		Postconditions = postconditions;
+	}
+
+	public void SetInteractable(Interactable interactable) {
+		if (!interactable) {
+			return;
+		}
+
+		Interactable = interactable;
 	}
 }

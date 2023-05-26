@@ -118,6 +118,7 @@ public class HierarchicalTaskNetwork {
 		// and set them in the same order as the goal tasks preconditions e.g. goal precons =
 		// seeObject, inRange. Then subtasks should be in oder of (seeObject, inRange), (inRange, otherPostcon, seeObject)
 		// seeObject, (otherPostCon, seeObject), inRange, (inRange, otherPostcon).
+		availableTasks = availableTasks.OrderBy(task => goalTask.Preconditions).ToArray();
 
 		// Remove all tasks that don't satisfy the goal tasks preconditions
 		foreach (Condition precondition in goalTask.Preconditions) {
