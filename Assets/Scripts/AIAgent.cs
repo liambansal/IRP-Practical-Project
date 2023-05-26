@@ -47,6 +47,22 @@ public class AIAgent : Agent {
 		UpdateHTN();
 	}
 
+	protected override void FixedUpdate() {
+		base.FixedUpdate();
+	}
+
+	protected override void OnTriggerEnter(Collider other) {
+		base.OnTriggerEnter(other);
+	}
+
+	protected override void OnTriggerStay(Collider other) {
+		base.OnTriggerStay(other);
+	}
+
+	protected override void OnTriggerExit(Collider other) {
+		base.OnTriggerExit(other);
+	}
+
 	/// <summary>
 	/// Gets the class' required references for components attached to the 
 	/// same game-object as this script, or any of it's children.

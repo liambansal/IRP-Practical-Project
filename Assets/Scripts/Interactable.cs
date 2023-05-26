@@ -15,7 +15,7 @@ public abstract class Interactable : MonoBehaviour, PingInfo {
 	/// <summary>
 	/// To be implemented by any agent's class that can pickup interactable objects.
 	/// </summary>
-	public interface PickupOperator {
+	public interface AssociatedAgentInfo {
 		public Transform PickupPoint {
 			get;
 			set;
@@ -30,6 +30,10 @@ public abstract class Interactable : MonoBehaviour, PingInfo {
 		get { return transform.position; }
 		set { }
 	}
+	public AssociatedAgentInfo AssociatedAgent {
+		get;
+		private set;
+	}
 
 	protected bool pickedUp = false;
 	protected string objectName = "";
@@ -37,10 +41,17 @@ public abstract class Interactable : MonoBehaviour, PingInfo {
 
 	private Transform pickupPoint = null;
 
-	public virtual bool Pickup(PickupOperator pickupOperator, bool pickedUp) {
+	/// <summary>
+	/// Causes the object to be picked up or dropped by an agent.
+	/// </summary>
+	/// <param name="associatedAgent"> The agent interacting with this interactable. </param>
+	/// <param name="pickedUp"> True if the agent is picking up the 
+	/// interactable, false if they're dropping it. </param>
+	/// <returns> True if the item was manipulated successfully. </returns>
+	public virtual bool Pickup(AssociatedAgentInfo associatedAgent, bool pickedUp) {
 		// Check if an agent who isn't holding this object is trying to
 		// interact with it.
-		if (pickupPoint.gameObject != pickupOperator.PickupPoint.gameObject) {
+		if (AssociatedAgent != associatedAgent) {
 			return false;
 		}
 
@@ -50,8 +61,10 @@ public abstract class Interactable : MonoBehaviour, PingInfo {
 		rigidBody.freezeRotation = pickedUp;
 
 		if (pickedUp) {
-			pickupPoint = pickupOperator.PickupPoint;
+			AssociatedAgent = associatedAgent;
+			pickupPoint = associatedAgent.PickupPoint;
 		} else {
+			AssociatedAgent = null;
 			pickupPoint = null;
 		}
 

@@ -1,10 +1,12 @@
 // Written by Liam Bansal
 // Date Created: 26/5/2023
 
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static Task;
 
-public class Agent : MonoBehaviour, Interactable.PickupOperator {
+public class Agent : MonoBehaviour, Interactable.AssociatedAgentInfo {
 	public Transform PickupPoint {
 		get { return pickupPoint; }
 		set { }
@@ -17,6 +19,7 @@ public class Agent : MonoBehaviour, Interactable.PickupOperator {
 	/// The interactable game-object the agent is currently holding onto.
 	/// </summary>
 	protected Interactable currentInteractable = null;
+	protected List<Interactable> nearbyInteractables = new List<Interactable>();
 
 	protected virtual void Awake() { }
 
@@ -26,12 +29,34 @@ public class Agent : MonoBehaviour, Interactable.PickupOperator {
 		MoveHeldObject();
 	}
 
+	protected virtual void FixedUpdate() {
+		OrderNearbyInteractables();
+	}
+
+	protected virtual void OnTriggerEnter(Collider other) {
+		if (other.CompareTag("Interactable")) {
+			InteractableDetected(other.GetComponent<Interactable>(), true);
+		}
+	}
+
+	protected virtual void OnTriggerStay(Collider other) {
+		if (other.CompareTag("Interactable")) {
+			InteractableDetected(other.GetComponent<Interactable>(), true);
+		}
+	}
+
+	protected virtual void OnTriggerExit(Collider other) {
+		if (other.CompareTag("Interactable")) {
+			InteractableDetected(other.GetComponent<Interactable>(), false);
+		}
+	}
+
 	/// <summary>
 	/// Makes the agent pickup the specified interactable.
 	/// </summary>
 	/// <param name="objectToPickUp"> The interactable that the agent will pick up. </param>
 	protected TaskState PickupObject(Interactable objectToPickUp) {
-		if (objectToPickUp.Pickup(this, true)) {
+		if (!currentInteractable && objectToPickUp.Pickup(this, true)) {
 			currentInteractable = objectToPickUp;
 			return TaskState.Succeeded;
 		}
@@ -53,6 +78,21 @@ public class Agent : MonoBehaviour, Interactable.PickupOperator {
 		}
 
 		return TaskState.Failed;
+	}
+
+	private void InteractableDetected(Interactable interactable, bool nearby) {
+		if (nearby &&
+			interactable.AssociatedAgent == null &&
+			!nearbyInteractables.Contains(interactable)) {
+			nearbyInteractables.Add(interactable);
+		} else if (!nearby &&
+			nearbyInteractables.Contains(interactable)) {
+			nearbyInteractables.Remove(interactable);
+		}
+	}
+
+	private void OrderNearbyInteractables() {
+		nearbyInteractables.OrderBy(interactable => Vector3.Distance(transform.position, interactable.transform.position));
 	}
 
 	/// <summary>

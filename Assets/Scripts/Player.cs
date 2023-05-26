@@ -15,7 +15,24 @@ public class Player : Agent {
 	protected override void Start() {
 		base.Start();
 	}
+
 	protected override void Update() {
 		base.Update();
+	}
+
+	protected override void FixedUpdate() {
+		base.FixedUpdate();
+	}
+
+	protected override void OnTriggerEnter(Collider other) {
+		base.OnTriggerEnter(other);
+	}
+
+	protected override void OnTriggerStay(Collider other) {
+		base.OnTriggerStay(other);
+	}
+
+	protected override void OnTriggerExit(Collider other) {
+		base.OnTriggerExit(other);
 	}
 }
