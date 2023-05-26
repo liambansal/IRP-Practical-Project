@@ -66,5 +66,44 @@ public class Task {
 		this.postconditions = postconditions;
 	}
 
+	/// <summary>
+	/// Allows the task's pre/postconditions to be changed.
+	/// </summary>
+	/// <param name="conditionList"> The type of list to search. </param>
+	/// <param name="conditionToChange"> The condition to chagne. </param>
+	/// <param name="newConditionName"> The new name for the condition.
+	/// Set to "" to leave the name unchanged. </param>
+	/// <param name="newConditionValue"> True if the condition has been met. </param>
+	public void ChangeCondition(ConditionLists conditionList,
+		string conditionToChange,
+		string newConditionName,
+		bool newConditionValue) {
+		switch (conditionList) {
+			case ConditionLists.Preconditions: {
+				UpdateCondition(ref preconditions);
+				break;
+			}
+			case ConditionLists.Postconditions: {
+				UpdateCondition(ref postconditions);
+				break;
+			}
+			default: {
+				break;
+			}
+		}
+
+		void UpdateCondition(ref Condition[] conditionList) {
+			for (int i = 0; i < conditionList.Length; ++i) {
+				if (conditionToChange != conditionList[i].name) {
+					continue;
+				}
+
+				if (newConditionName != "") {
+					conditionList[i].name = newConditionName;
+				}
+
+				conditionList[i].satisfied = newConditionValue;
+			}
+		}
 	}
 }
