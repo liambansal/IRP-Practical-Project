@@ -2,7 +2,7 @@
 // Date Created: 11/5/2023
 
 using System.Collections.Generic;
-
+using System.Linq;
 /// <summary>
 /// The base task class that provides the types and properties used by all 
 /// other task classes.
@@ -64,6 +64,56 @@ public class Task {
 		Condition[] postconditions) {
 		this.preconditions = preconditions;
 		this.postconditions = postconditions;
+	}
+
+	public static int MatchingConditions(Condition[] firstConditions, Condition[] secondConditions) {
+		int matchingConditions = 0;
+
+		foreach (Condition condition in firstConditions) {
+			if (secondConditions.Contains(condition)) {
+				++matchingConditions;
+			}
+		}
+
+		return matchingConditions;
+	}
+
+	public static bool MissingCondition(Condition[] requiredConditions, Condition[] otherConditions) {
+		foreach (Condition condition in requiredConditions) {
+			if (!otherConditions.Contains(condition)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public static Condition[] GatherConditions(Task[] tasks, ConditionLists conditionListType) {
+		List<Condition> conditions = new List<Condition>();
+
+		foreach (Task task in tasks) {
+			switch (conditionListType) {
+				case ConditionLists.Preconditions: {
+					foreach (Condition condition in task.Preconditions) {
+						conditions.Add(condition);
+					}
+
+					break;
+				}
+				case ConditionLists.Postconditions: {
+					foreach (Condition condition in task.Postconditions) {
+						conditions.Add(condition);
+					}
+
+					break;
+				}
+				default: {
+					break;
+				}
+			}
+		}
+
+		return conditions.ToArray();
 	}
 
 	/// <summary>
