@@ -9,7 +9,12 @@ using static Task;
 /// An autonomous agent that follows orders given by the player, but also 
 /// makes their own decisions when no order are given.
 /// </summary>
-public class AIAgent : MonoBehaviour {
+public class AIAgent : MonoBehaviour, Interactable.PickupOperator {
+	public Transform PickupPoint {
+		get { return pickupPoint; }
+		set { }
+	}
+
 	#region Sensor Variables
 	private VisualSensor visualSensor = null;
 	#endregion
@@ -31,6 +36,9 @@ public class AIAgent : MonoBehaviour {
 
 	private Player player = null;
 
+	[SerializeField, Tooltip("The transform whose position will decide where " +
+		"this agent hold's interactable game-objects.")]
+	private Transform pickupPoint = null;
 	/// <summary>
 	/// The interactable game-object the AI agent is currently holding onto.
 	/// </summary>
@@ -38,7 +46,7 @@ public class AIAgent : MonoBehaviour {
 
 	private void Awake() {
 		GetComponents();
-		CreateNetwork();
+		CreateHierarchicalTaskNetwork();
 	}
 
 	private void Start() {
@@ -70,7 +78,7 @@ public class AIAgent : MonoBehaviour {
 	/// Creates a hierarchical task network for the AI to use, if one has not 
 	/// already been created.
 	/// </summary>
-	private void CreateNetwork() {
+	private void CreateHierarchicalTaskNetwork() {
 		if (hierarchicalTaskNetwork != null) {
 			return;
 		}
@@ -175,6 +183,8 @@ public class AIAgent : MonoBehaviour {
 	/// </summary>
 	private TaskState Follow() {
 		if (!navMeshAgent.isOnNavMesh) {
+			navMeshAgent.ResetPath();
+			moveDestinationSet = false;
 			return TaskState.Failed;
 		}
 
@@ -184,7 +194,7 @@ public class AIAgent : MonoBehaviour {
 			moveDestinationSet = navMeshAgent.SetDestination(targetDestination);
 		}
 
-		if (!navMeshAgent.hasPath && navMeshAgent.pathPending == false) {
+		if (ArrivedAtDestination()) {
 			return TaskState.Succeeded;
 		}
 
@@ -196,17 +206,39 @@ public class AIAgent : MonoBehaviour {
 	/// </summary>
 	/// <param name="targetStandPosition"> The position where the AI agent will move to. </param>
 	private TaskState MoveTo(Vector3 targetStandPosition) {
-		return TaskState.Succeeded;
+		if (!navMeshAgent.isOnNavMesh) {
+			navMeshAgent.ResetPath();
+			moveDestinationSet = false;
+			return TaskState.Failed;
+		}
+
+		if (!moveDestinationSet) {
+			moveDestinationSet = navMeshAgent.SetDestination(targetStandPosition);
+		}
+
+		if (ArrivedAtDestination()) {
+			return TaskState.Succeeded;
+		}
+
+		return TaskState.Executing;
 	}
 
 	/// <summary>
-	/// Makes the AI agent stay in place at it's current position.
+	/// Makes the AI agent stand in place at their current position indefinitely.
 	/// </summary>
 	private TaskState Stay() {
-		return TaskState.Succeeded;
+		if (moveDestinationSet ||
+			navMeshAgent.hasPath ||
+			navMeshAgent.pathPending) {
+			navMeshAgent.ResetPath();
+			moveDestinationSet = false;
+		}
+
+		return TaskState.Executing;
 	}
 
 	private TaskState LookAround() {
+		// TODO: make the AI look around them by turning their head.
 		return TaskState.Succeeded;
 	}
 
@@ -215,14 +247,44 @@ public class AIAgent : MonoBehaviour {
 	/// </summary>
 	/// <param name="objectToPickUp"> The interactable that the AI agent will pick up. </param>
 	private TaskState PickUp(Interactable objectToPickUp) {
-		return TaskState.Succeeded;
+		if (objectToPickUp.Pickup(this, true)) {
+			currentInteractable = objectToPickUp;
+			return TaskState.Succeeded;
+		}
+		
+		return TaskState.Failed;
 	}
 
 	/// <summary>
 	/// Makes the AI agent drop the interactable it's currently holding.
 	/// </summary>
 	private TaskState Drop() {
-		return TaskState.Succeeded;
+		if (!currentInteractable) {
+			return TaskState.Succeeded;
+		}
+
+		if (currentInteractable.Pickup(this, false)) {
+			currentInteractable = null;
+			return TaskState.Succeeded;
+		}
+		
+		return TaskState.Failed;
 	}
 	#endregion
+
+	/// <summary>
+	/// Checks if the AI agent has arrived at their nav mesh agent's 
+	/// destination.
+	/// </summary>
+	/// <returns> True if the agent has arrived at their destination. </returns>
+	private bool ArrivedAtDestination() {
+		if (moveDestinationSet &&
+			!navMeshAgent.hasPath &&
+			!navMeshAgent.pathPending) {
+			moveDestinationSet = false;
+			return true;
+		}
+
+		return false;
+	}
 }

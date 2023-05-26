@@ -16,7 +16,7 @@ public abstract class Interactable : MonoBehaviour, PingInfo {
 	/// To be implemented by any agent's class that can pickup interactable objects.
 	/// </summary>
 	public interface PickupOperator {
-		public Transform PickUpPoint {
+		public Transform PickupPoint {
 			get;
 			set;
 		}
@@ -37,23 +37,33 @@ public abstract class Interactable : MonoBehaviour, PingInfo {
 
 	private Transform pickupPoint = null;
 
-	protected virtual void Awake() {
-		rigidBody = GetComponent<Rigidbody>();
-	}
+	public virtual bool Pickup(PickupOperator pickupOperator, bool pickedUp) {
+		// Check if an agent who isn't holding this object is trying to
+		// interact with it.
+		if (pickupPoint.gameObject != pickupOperator.PickupPoint.gameObject) {
+			return false;
+		}
 
-	protected virtual void Update() {
-		HoldObject();
-	}
-
-	protected virtual void Pickup(PickupOperator pickupOperator, bool pickedUp) {
 		this.pickedUp = pickedUp;
 		rigidBody.useGravity = !pickedUp;
 		rigidBody.isKinematic = pickedUp;
 		rigidBody.freezeRotation = pickedUp;
 
 		if (pickedUp) {
-			pickupPoint = pickupOperator.PickUpPoint;
+			pickupPoint = pickupOperator.PickupPoint;
+		} else {
+			pickupPoint = null;
 		}
+
+		return true;
+	}
+
+	protected virtual void Awake() {
+		rigidBody = GetComponent<Rigidbody>();
+	}
+
+	protected virtual void Update() {
+		HoldObject();
 	}
 
 	private void HoldObject() {
