@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3893294197879345259, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3893294197879345259, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -48,3 +48,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b0cfa350a029aeb4bb57fe6f99f9fe6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pickupPoint: {fileID: 7393744753717634676}
+--- !u!4 &7393744753717634676 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 224936155634608652, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
+  m_PrefabInstance: {fileID: 7315246108278606968}
+  m_PrefabAsset: {fileID: 0}
