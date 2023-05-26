@@ -99,7 +99,7 @@ public class AIAgent : MonoBehaviour {
 	/// Makes the AI agent follow the player.
 	/// </summary>
 	private TaskState Follow() {
-		return TaskState.Executing;
+		return TaskState.Finished;
 	}
 
 	/// <summary>
@@ -107,7 +107,7 @@ public class AIAgent : MonoBehaviour {
 	/// </summary>
 	/// <param name="targetStandPosition"> The position where the AI agent will move to. </param>
 	private TaskState MoveTo(Vector3 targetStandPosition) {
-		return TaskState.Executing;
+		return TaskState.Finished;
 	}
 
 	/// <summary>
@@ -115,21 +115,21 @@ public class AIAgent : MonoBehaviour {
 	/// </summary>
 	/// <param name="objectToPickUp"> The interactable that the AI agent will pick up. </param>
 	private TaskState PickUp(Interactable objectToPickUp) {
-		return TaskState.Executing;
+		return TaskState.Finished;
 	}
 
 	/// <summary>
 	/// Makes the AI agent drop the interactable it's currently holding.
 	/// </summary>
 	private TaskState Drop() {
-		return TaskState.Executing;
+		return TaskState.Finished;
 	}
 
 	/// <summary>
 	/// Makes the AI agent stay in place at it's current position.
 	/// </summary>
 	private TaskState Stay() {
-		return TaskState.Executing;
+		return TaskState.Finished;
 	}
 	#endregion
 }

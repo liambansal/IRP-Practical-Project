@@ -151,6 +151,9 @@ public class HierarchicalTaskNetwork {
 		// (if the postcondition of one task, on the same level of depth, satisfies the precondition of another task,
 		// then it must be executed first?)
 
+		return null;
+
+		// NOTES:
 		// goal: pickup cube
 		// pickup cube (precon = seeCube && inRange)
 			// find cube (compound) (postCon seeCube)
@@ -159,7 +162,7 @@ public class HierarchicalTaskNetwork {
 				// look around (precon = inPosition, postcon = seeCube)
 			// move to cube (precon = seeCube, postcon = inRange)
 
-		return null;
+
 
 		// ! OLD COMMENT - Can remove once method works !
 		//// TODO: go through ordered tasks until a set that satisfies all preconditions is found.
