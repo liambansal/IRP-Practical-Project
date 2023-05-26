@@ -1,8 +1,6 @@
 // Written by Liam Bansal
 // Date Created: 9/5/2023
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using static Task;
@@ -46,6 +44,10 @@ public class AIAgent : MonoBehaviour {
 
 	private void Start() {
 		FindComponents();
+	}
+
+	private void Update() {
+		UpdateHTN();
 	}
 
 	/// <summary>
@@ -142,8 +144,30 @@ public class AIAgent : MonoBehaviour {
 			lookAroundTask
 		};
 
-		// TODO: create a list of goals that the HTN can complete.
-		hierarchicalTaskNetwork = new HierarchicalTaskNetwork(null, networkTasks);
+		#region Follow Goal
+		Condition[] followGoalPreconditions = new Condition[] {
+			new Condition("See Object")
+		};
+		Condition[] followGoalPostconditions = new Condition[] {
+			new Condition("In Position")
+		};
+		PrimitiveTask followGoal = new PrimitiveTask(Follow, followGoalPreconditions, followGoalPostconditions);
+		#endregion
+
+		Task[] goals = new Task[] {
+			followGoal
+		};
+
+		hierarchicalTaskNetwork = new HierarchicalTaskNetwork(goals, networkTasks);
+		hierarchicalTaskNetwork.SetGoal(followGoal);
+	}
+
+	private void UpdateHTN() {
+		if (hierarchicalTaskNetwork == null) {
+			return;
+		}
+
+		hierarchicalTaskNetwork.Update();
 	}
 
 	#region Actions
