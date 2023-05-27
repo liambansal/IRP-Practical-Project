@@ -12,7 +12,7 @@ public class Ping : MonoBehaviour {
 	/// An interface containing all the relevant information about a
 	/// game-object to populate it's ping UI element.
 	/// </summary>
-	public interface PingInfo {
+	public interface IPingInfo {
 		public string ObjectName {
 			get;
 			set;
@@ -29,7 +29,7 @@ public class Ping : MonoBehaviour {
 	private float lifetime = 4.0f;
 	private Text pingName = null;
 
-	public void SetPing(PingInfo pingInfo) {
+	public void SetPing(IPingInfo pingInfo) {
 		pingName.text = pingInfo.ObjectName;
 	}
 

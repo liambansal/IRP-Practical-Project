@@ -11,12 +11,32 @@ using static Ping;
 /// Provides methods and variables that will be used by all, if not most, 
 /// interactable game-objects.
 /// </summary>
-public abstract class Interactable : MonoBehaviour, PingInfo {
+public abstract class Interactable : MonoBehaviour, IPingInfo {
 	/// <summary>
 	/// To be implemented by any agent's class that can pickup interactable objects.
 	/// </summary>
-	public interface AssociatedAgentInfo {
+	public interface IAssociatedAgentInfo {
 		public Transform PickupPoint {
+			get;
+			set;
+		}
+	}
+
+	/// <summary>
+	/// Implement in interactable item classes that only work when multiple 
+	/// interactables are used together.
+	/// Can be implemented by classes that don't inherit from the
+	/// interactable base class.
+	/// </summary>
+	public interface ITrigger {
+		public bool Active {
+			get;
+			set;
+		}
+		/// <summary>
+		/// The object that triggers this interactable to become active.		
+		/// </summary>
+		public ITrigger Trigger {
 			get;
 			set;
 		}
@@ -30,7 +50,7 @@ public abstract class Interactable : MonoBehaviour, PingInfo {
 		get { return transform.position; }
 		set { }
 	}
-	public AssociatedAgentInfo AssociatedAgent {
+	public IAssociatedAgentInfo AssociatedAgent {
 		get;
 		private set;
 	}
@@ -48,7 +68,7 @@ public abstract class Interactable : MonoBehaviour, PingInfo {
 	/// <param name="pickedUp"> True if the agent is picking up the 
 	/// interactable, false if they're dropping it. </param>
 	/// <returns> True if the item was manipulated successfully. </returns>
-	public virtual bool Pickup(AssociatedAgentInfo associatedAgent, bool pickedUp) {
+	public virtual bool Pickup(IAssociatedAgentInfo associatedAgent, bool pickedUp) {
 		// Check if an agent who isn't holding this object is trying to
 		// interact with it.
 		if (AssociatedAgent != null && AssociatedAgent != associatedAgent) {

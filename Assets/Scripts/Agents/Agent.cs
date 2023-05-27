@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using static Task;
 
-public class Agent : MonoBehaviour, Interactable.AssociatedAgentInfo {
+public class Agent : MonoBehaviour, Interactable.IAssociatedAgentInfo {
 	public Transform PickupPoint {
 		get { return pickupPoint; }
 		set { }
