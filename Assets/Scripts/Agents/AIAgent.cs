@@ -9,6 +9,7 @@ using static Task;
 /// An autonomous agent that follows orders given by the player, but also 
 /// makes their own decisions when no order are given.
 /// </summary>
+[RequireComponent(typeof(NavMeshAgent))]
 public class AIAgent : Agent {
 	#region Sensor Variables
 	private VisualSensor visualSensor = null;

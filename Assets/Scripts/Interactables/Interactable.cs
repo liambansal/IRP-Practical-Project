@@ -51,7 +51,7 @@ public abstract class Interactable : MonoBehaviour, PingInfo {
 	public virtual bool Pickup(AssociatedAgentInfo associatedAgent, bool pickedUp) {
 		// Check if an agent who isn't holding this object is trying to
 		// interact with it.
-		if (AssociatedAgent != associatedAgent) {
+		if (AssociatedAgent != null && AssociatedAgent != associatedAgent) {
 			return false;
 		}
 

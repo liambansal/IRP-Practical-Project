@@ -1,6 +1,8 @@
 // Written by Liam Bansal
 // Date Created: 9/5/2023
 
+using StarterAssets;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -8,8 +10,11 @@ using UnityEngine;
 /// interactability, gestures, and pings.
 /// </summary>
 public class Player : Agent {
+	private ThirdPersonController characterController = null;
+
 	protected override void Awake() {
 		base.Awake();
+		GetComponents();
 	}
 
 	protected override void Start() {
@@ -18,6 +23,7 @@ public class Player : Agent {
 
 	protected override void Update() {
 		base.Update();
+		Interact();
 	}
 
 	protected override void FixedUpdate() {
@@ -34,5 +40,24 @@ public class Player : Agent {
 
 	protected override void OnTriggerExit(Collider other) {
 		base.OnTriggerExit(other);
+	}
+
+	private void GetComponents() {
+		characterController = GetComponent<ThirdPersonController>();
+	}
+
+	private void Interact() {
+		if (!characterController.Input.interact) {
+			return;
+		} 
+
+		if (!currentInteractable &&
+			nearbyInteractables.Count > 0) {
+			PickupObject(nearbyInteractables[0]);
+			characterController.Input.interact = false;
+		} else if (currentInteractable) {
+			DropObject();
+			characterController.Input.interact = false;
+		}
 	}
 }
