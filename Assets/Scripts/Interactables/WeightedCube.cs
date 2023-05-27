@@ -3,4 +3,19 @@
 
 using UnityEngine;
 
-public class WeightedCube : Interactable { }
+public class WeightedCube : Interactable, Interactable.ICanTrigger {
+	public bool Active {
+		get { return active; }
+		set { }
+	}
+
+	private bool active = true;
+
+	protected override void Awake() {
+		base.Awake();
+	}
+
+	protected override void Update() {
+		base.Update();
+	}
+}

@@ -1,21 +1,28 @@
 // Written by Liam Bansal
 // Date Created: 27/5/2023
 
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using static Interactable;
 
-public class Door : MonoBehaviour, ITrigger {
-	public bool Active {
-		get;
-		set;
-	}
-	public ITrigger Trigger {
-		get;
-		set;
+public class Door : MonoBehaviour, IHasTrigger {
+	public ICanTrigger Trigger {
+		get { return trigger; }
+		set { }
 	}
 
-	private bool active = false;
-	private ITrigger trigger = null;
+	[SerializeField, Tooltip("The object that triggers this " +
+		"interactable to become active.")]
+	private ICanTrigger trigger = null;
+
+	private void Update() {
+		IsTriggered();
+	}
+
+	private void IsTriggered() {
+		if (trigger == null || !trigger.Active) {
+			return;
+		}
+
+		// TODO: play the animation?
+	}
 }

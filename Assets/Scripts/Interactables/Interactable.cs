@@ -28,15 +28,22 @@ public abstract class Interactable : MonoBehaviour, IPingInfo {
 	/// Can be implemented by classes that don't inherit from the
 	/// interactable base class.
 	/// </summary>
-	public interface ITrigger {
-		public bool Active {
-			get;
-			set;
-		}
+	public interface IHasTrigger {
 		/// <summary>
 		/// The object that triggers this interactable to become active.		
 		/// </summary>
-		public ITrigger Trigger {
+		public ICanTrigger Trigger {
+			get;
+			set;
+		}
+	}
+
+	/// <summary>
+	/// To be implemented by interactable item that can act as a trigger for 
+	/// others to activate.
+	/// </summary>
+	public interface ICanTrigger {
+		public bool Active {
 			get;
 			set;
 		}
