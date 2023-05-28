@@ -60,4 +60,17 @@ public class Player : Agent {
 			characterController.Input.interact = false;
 		}
 	}
+
+	private void Ping() {
+		if (!characterController.Input.ping) {
+			return;
+		}
+
+		// TODO: create ping marker
+		// TODO: get type of marker
+		// if object is hit, pick it up
+		// if ground was hit, move to
+		// if pressure plate was hit, drop object there
+		// TODO: give new goal to AI based on type of marker
+	}
 }

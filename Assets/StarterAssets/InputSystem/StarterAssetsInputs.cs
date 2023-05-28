@@ -11,6 +11,7 @@ namespace StarterAssets {
 		public bool jump;
 		public bool sprint;
 		public bool interact;
+		public bool ping;
 
 		[Header("Movement Settings")]
 		public bool analogMovement;
@@ -41,6 +42,10 @@ namespace StarterAssets {
 		public void OnInteract(InputValue value) {
 			InteractInput(value.isPressed);
 		}
+
+		public void OnPing(InputValue value) {
+			PingInput(value.isPressed);
+		}
 #endif
 
 
@@ -62,6 +67,10 @@ namespace StarterAssets {
 
 		public void InteractInput(bool newInteractState) {
 			interact = newInteractState;
+		}
+
+		public void PingInput(bool newPingState) {
+			ping = newPingState;
 		}
 
 		private void OnApplicationFocus(bool hasFocus) {
