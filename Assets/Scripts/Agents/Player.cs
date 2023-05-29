@@ -5,7 +5,6 @@ using StarterAssets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static Interactable;
-using static Ping;
 
 /// <summary>
 /// Controls the player's response to all device inputs such as movement, 

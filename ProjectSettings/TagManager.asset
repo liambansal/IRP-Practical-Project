@@ -19,7 +19,7 @@ TagManager:
   - InteractableCollider
   - InteractableTrigger
   - Player
-  - 
+  - Ignore
   - 
   - 
   - 

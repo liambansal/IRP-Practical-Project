@@ -160,8 +160,17 @@ public class HierarchicalTaskNetwork {
 					continue;
 				}
 
-				foreach (Condition condition in task.Preconditions) {
-					if (condition.satisfied || planPostconditions.Contains(condition)) {
+				foreach (Condition precondition in task.Preconditions) {
+					bool conditionsMatch = false;
+
+					foreach (Condition postcondition in planPostconditions) {
+						if (precondition.name == postcondition.name) {
+							conditionsMatch = true;
+							break;
+						}
+					}
+
+					if (conditionsMatch || precondition.satisfied) {
 						continue;
 					}
 
@@ -194,10 +203,12 @@ public class HierarchicalTaskNetwork {
 
 		foreach (Task task in availableTasks) {
 			foreach (Condition postCondition in task.Postconditions) {
-				// If a postcondition and precondition match then the
-				// available task satisfies the goal task.
-				if (goalTask.Preconditions.Contains(postCondition)) {
-					validTasks.Add(task);
+				foreach (Condition precondition in goalTask.Preconditions) {
+					// If a postcondition and precondition match then the
+					// available task satisfies the goal task.
+					if (postCondition.name == precondition.name && !validTasks.Contains(task)) {
+						validTasks.Add(task);
+					}
 				}
 			}
 		}

@@ -159,7 +159,8 @@ public class AIAgent : Agent {
 		#endregion
 		#region Drop Task
 		Condition[] dropPreconditions = new Condition[] {
-			new Condition("Holding Object")
+			new Condition("Holding Object"),
+			new Condition("In Position")
 		};
 		Condition[] dropPostconditions = new Condition[] {
 			//new Condition("Not Holding Object")

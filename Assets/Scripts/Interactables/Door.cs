@@ -62,7 +62,7 @@ public class Door : MonoBehaviour, IHasTrigger {
 	}
 
 	private void LoadNextScene() {
-		if (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCount - 1) {
+		if (SceneManager.GetActiveScene().buildIndex >= SceneManager.sceneCount - 1) {
 			SceneManager.LoadScene(0);
 		}
 
