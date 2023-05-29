@@ -129,7 +129,7 @@ public class AIAgent : Agent {
 		#endregion
 		#region Move To Task
 		Condition[] moveToPreconditions = new Condition[] {
-			new Condition("Has Destination")
+			new Condition("Vector Set")
 		};
 		Condition[] moveToPostconditions = new Condition[] {
 			new Condition("In Position"),
@@ -162,7 +162,7 @@ public class AIAgent : Agent {
 			new Condition("Holding Object")
 		};
 		Condition[] dropPostconditions = new Condition[] {
-			new Condition("Not Holding Object", true)
+			//new Condition("Not Holding Object")
 		};
 		GoalData dropGoal = new GoalData(GoalType.Drop, null);
 		DropTask = new PrimitiveTask(DropObject,
@@ -175,7 +175,7 @@ public class AIAgent : Agent {
 			new Condition("In Position")
 		};
 		Condition[] stayPostconditions = new Condition[] {
-			new Condition("Staying")
+			new Condition("In Position")
 		};
 		GoalData stayGoal = new GoalData(GoalType.Stay, null);
 		StayTask = new PrimitiveTask(Stay,

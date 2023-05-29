@@ -5,6 +5,7 @@ using StarterAssets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static Interactable;
+using static Ping;
 
 /// <summary>
 /// Controls the player's response to all device inputs such as movement, 
@@ -26,10 +27,6 @@ public class Player : Agent {
 	public void OrderAIToMove(GameObject moveDestination) {
 		PrimitiveVectorTask moveTask = aiAgent.MoveToTask;
 		moveTask.UpdateGoal(Task.GoalType.MoveTo, moveDestination);
-		moveTask.ChangeCondition(Task.ConditionLists.Preconditions,
-			"Has Destination",
-			"",
-			true);
 		taskNetwork.SetGoal(moveTask);
 	}
 
@@ -134,6 +131,7 @@ public class Player : Agent {
 		Vector3 pingPosition = raycastHit.point + Vector3.up * pingYOffset;
 		Ping instantiatedPing = Instantiate(pingPrefab, pingPosition, Quaternion.identity, null).GetComponentInChildren<Ping>();
 		Interactable interactableScript = raycastHit.collider.GetComponent<Interactable>();
+		PressurePlate pressurePlate = raycastHit.collider.GetComponent<PressurePlate>();
 
 		// Case for picking up an interactable item.
 		if (interactableScript &&
@@ -142,15 +140,15 @@ public class Player : Agent {
 			OrderAIToPickupObject(interactableScript);
 			instantiatedPing.SetPing(interactableScript);
 			// Case for dropping an interactable item to trigger something.
-		} else if (interactableScript &&
-			interactableScript is IHasTrigger) {
+		} else if (pressurePlate && aiAgent) {
 			OrderAIToDropObject();
-			instantiatedPing.SetPing(interactableScript);
+			instantiatedPing.SetPing(pressurePlate);
 			// Case for activating an interactable item.
 		} else if (true == false) {
 			// TODO: create plan to activate the interactable.
 		} else {
 			OrderAIToMove(instantiatedPing.gameObject);
+			instantiatedPing.SetPing("Move here!");
 		}
 	}
 }

@@ -4,7 +4,7 @@
 using UnityEngine;
 using static Interactable;
 
-public class PressurePlate : MonoBehaviour, IHasTrigger, IIsTrigger {
+public class PressurePlate : MonoBehaviour, IHasTrigger, IIsTrigger, Ping.IPingInfo {
 	public bool Active {
 		get { return active; }
 		set { }
@@ -13,11 +13,21 @@ public class PressurePlate : MonoBehaviour, IHasTrigger, IIsTrigger {
 		get { return trigger; }
 		set { }
 	}
+	public string ObjectName {
+		get { return objectName; }
+		set { }
+	}
+	public Vector3 WorldPosition {
+		get;
+		set;
+	}
 
 	private bool active = false;
 	[SerializeField, Tooltip("The object that triggers this " +
 		"interactable to become active.")]
 	private IIsTrigger trigger = null;
+	[SerializeField]
+	private string objectName = "";
 
 	private void OnTriggerEnter(Collider other) {
 		CheckForTrigger(other, true);

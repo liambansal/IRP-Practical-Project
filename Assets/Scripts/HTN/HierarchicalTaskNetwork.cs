@@ -22,7 +22,7 @@ public class HierarchicalTaskNetwork {
 	/// An array of tasks that can be used by the hierarchical task network.
 	/// </summary>
 	private Task[] accessibleTasks = null;
-	private Stack<Task> plan = null;
+	private Stack<Task> plan = new Stack<Task>();
 	/// <summary>
 	/// Used for sharing conditions between different tasks.
 	/// </summary>
@@ -91,50 +91,53 @@ public class HierarchicalTaskNetwork {
 	/// <param name="taskToDecompose"> The task to create a plan for. </param>
 	/// <returns> The stack of subtasks that acheive the goal. </returns>
 	private Stack<Task> DecomposeTask(Task taskToDecompose, Task[] availableTasks) {
-		OrderTasks(ref availableTasks);
+		OrderTasks(ref availableTasks, taskToDecompose);
 		// Gets the tasks that only satisfy the preconditions of the task to decompose.
 		Task[] validTasks = GetValidTasks(taskToDecompose, availableTasks);
 		Stack<Task> plan = new Stack<Task>();
+		UpdateAlternateTasks(ref taskToDecompose);
 
 		if (!taskToDecompose.AllConditionsSatisfied(taskToDecompose.Preconditions)) {
-			// Get the task(s) that solve the goal tasks preconditions and add to a stack
-			// loop over tasks that meet the goals preconditions
-			foreach (Task task in validTasks) {
-				task.UpdateGoal(task.Goal.goalType, taskToDecompose.Goal.goalObject);
-
-				// Sets the data that's used as the argument for the tasks with parameters.
-				if (task is PrimitiveVectorTask) {
-					(task as PrimitiveVectorTask).SetVector(task.Goal.goalObject.transform.position);
-				} else if (task is PrimitiveInteractableTask) {
-					(task as PrimitiveInteractableTask).SetInteractable(task.Goal.goalObject.GetComponent<Interactable>());
+			// Gets a set of tasks that solve the preconditions of the task to
+			// decompose.
+			for (int i = 0; i < validTasks.Length; ++i) {
+				validTasks[i].UpdateGoal(validTasks[i].Goal.goalType, taskToDecompose.Goal.goalObject);
+				UpdateAlternateTasks(ref validTasks[i]);
+				
+				if (!AreAllTasksAddressed(plan.Reverse().ToArray())) {
+					Stack<Task> subtaskStack = DecomposeTask(validTasks[i], accessibleTasks);
+					CompoundTask compoundTask = new CompoundTask(subtaskStack,
+						validTasks[i].Preconditions,
+						subtaskStack.Peek().Postconditions,
+						subtaskStack.Peek().Goal);
+					plan.Push(compoundTask);
+				} else {
+					plan.Push(validTasks[i]);
 				}
 
-				plan.Push(task);
 				Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
+				// Push the task to decompose prior to checking if all tasks
+				// have been addressed.
+				plan.Push(taskToDecompose);
 
-				if (!MissingCondition(goal.Preconditions, planPostconditions)) {
-					// Remeber to add the original task to execute.
-					plan.Push(taskToDecompose);
+				if (AreAllTasksAddressed(plan.Reverse().ToArray())) {
 					// All the goal's preconditions have been addressed, break.
 					break;
 				} else {
 					// TODO: remove other tasks that only share the same postconditions and have no more
+					// Remove the final task since the plan isn't finished yet.
+					plan.Pop();
 					continue;
 				}
 			}
-		// Sets the data that's used as the argument for the tasks with parameters.
-		} else {
-			if (taskToDecompose is PrimitiveVectorTask) {
-				(taskToDecompose as PrimitiveVectorTask).SetVector(taskToDecompose.Goal.goalObject.transform.position);
-			} else if (taskToDecompose is PrimitiveInteractableTask) {
-				(taskToDecompose as PrimitiveInteractableTask).SetInteractable(taskToDecompose.Goal.goalObject.GetComponent<Interactable>());
-			}
+		}
 
+		if (plan.Count == 0) {
 			// Remeber to add the original task to execute.
 			plan.Push(taskToDecompose);
 		}
 
-		bool areAllSubtsksAddressed = AreAllTasksAddressed(plan.ToArray(), null);
+		bool areAllSubtsksAddressed = AreAllTasksAddressed(plan.Reverse().ToArray());
 
 		if (areAllSubtsksAddressed) {
 			Task[] planCopy = plan.ToArray();
@@ -147,51 +150,45 @@ public class HierarchicalTaskNetwork {
 			}
 
 			return plan;
-		} else {
-			// TODO: 
-			// foreach task
-				// if precons not met && no subtasks exist
-					// repeat above process for all new tasks by CallingAboveMethod() and pass the subTask as a parameter
-					// task.subtasks = AboveMethod();
 		}
 
-		return null;
+		return new Stack<Task>();
 
-		// NOTES:
-		// How would you resolve this so the tasks are executed in the correct order?
-		// (if the postcondition of one task, on the same level of depth, satisfies the precondition of another task,
-		// then it must be executed first?)
-
-		// goal: pickup cube
-		// pickup cube (precon = seeCube && inRange)
-			// find cube (compound) (postCon seeCube)
-				// move to (precon = knowDestination, postcon = inPosition)
-					// Must have an order to know the destination.
-				// look around (precon = inPosition, postcon = seeCube)
-			// move to cube (precon = seeCube, postcon = inRange)
+		// Sets the data that's used as the argument for the tasks with parameters.
+		void UpdateAlternateTasks(ref Task task) {
+			if (task is PrimitiveVectorTask) {
+				(task as PrimitiveVectorTask).SetVector(task.Goal.goalObject.transform.position);
+				task.ChangeCondition(ConditionLists.Preconditions,
+					"Vector Set",
+					"",
+					true);
+			} else if (task is PrimitiveInteractableTask) {
+				(task as PrimitiveInteractableTask).SetInteractable(task.Goal.goalObject.GetComponent<Interactable>());
+			}
+		}
 
 		// TODO: return true if the plan has subtasks that satisfy
 		// all the preconditions, and each subtasks has a task that satisfies
 		// its preconditions etc.
-		bool AreAllTasksAddressed(Task[] plan, Task previousTask) {
+		bool AreAllTasksAddressed(Task[] plan) {
+			Condition[] planPostconditions = GatherConditions(plan, ConditionLists.Postconditions);
+
 			foreach (Task task in plan) {
 				if (task is CompoundTask) {
-					if (!AreAllTasksAddressed((task as CompoundTask).Subtasks.ToArray(), previousTask)) {
+					if (!AreAllTasksAddressed((task as CompoundTask).Subtasks.ToArray())) {
 						return false;
 					}
 
-					// Does the compound task need to have its preconditions satisfied.
 					continue;
 				}
 
 				foreach (Condition condition in task.Preconditions) {
-					if (!condition.satisfied ||
-						(previousTask != null && !previousTask.Postconditions.Contains(condition))) {
-						return false;
+					if (condition.satisfied || planPostconditions.Contains(condition)) {
+						continue;
 					}
-				}
 
-				previousTask = task;
+					return false;
+				}
 			}
 
 			return true;
@@ -200,19 +197,21 @@ public class HierarchicalTaskNetwork {
 
 	// TODO: add a bias for tasks that have their postconditions matching
 	// the order of the goal tasks preconditions.
-	// TODO: if two tasks are on par then order them by something else...
 	/// <summary>
 	/// Orders the tasks by which one is the most optimal to execute first.
 	/// </summary>
-	private void OrderTasks(ref Task[] tasks) {
+	/// <param name="tasks"> The collection of tasks to change the order of. </param>
+	/// <param name="goalTask"> Where the conditions for ordering the tasks is 
+	/// obtained from. </param>
+	private void OrderTasks(ref Task[] tasks, Task goalTask) {
 		// TODO: Order the available tasks by which one's postconditions satisfies
 		// the goal tasks' preconditions best, and set them in the same order
 		// as the goal tasks preconditions e.g. goal precons = seeObject,
 		// inRange. Then subtasks should be in oder of (seeObject, inRange),
 		// (inRange, otherPostcon, seeObject) seeObject, (otherPostCon,
 		// seeObject), inRange, (inRange, otherPostcon).
-		tasks = tasks.OrderByDescending(task => task.Goal.goalType == goal.Goal.goalType).ThenByDescending(task => MatchingConditions(task.Postconditions,
-			goal.Preconditions)).ToArray();
+		tasks = tasks.OrderByDescending(task => task.Goal.goalType == goalTask.Goal.goalType).ThenByDescending(task => MatchingConditions(task.Postconditions,
+			goalTask.Preconditions)).ToArray();
 	}
 
 	// TODO: add a task even if it's condition only partially matches.

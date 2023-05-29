@@ -34,6 +34,10 @@ public class Ping : MonoBehaviour {
 		pingName.text = pingInfo.ObjectName;
 	}
 
+	public void SetPing(string pingName) {
+		this.pingName.text = pingName;
+	}
+
 	private void Awake() {
 		pingName = GetComponentInChildren<TextMeshProUGUI>();
 	}

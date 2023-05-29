@@ -61,6 +61,7 @@ public abstract class Interactable : MonoBehaviour, IPingInfo {
 	}
 
 	protected bool pickedUp = false;
+	[SerializeField]
 	protected string objectName = "";
 	protected Rigidbody rigidBody = null;
 

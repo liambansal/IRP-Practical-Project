@@ -11,7 +11,11 @@ public class Agent : MonoBehaviour, Interactable.IAssociatedAgentInfo {
 		get { return pickupPoint; }
 		set { }
 	}
-	
+	public Interactable CurrentInteractable {
+		get { return currentInteractable; }
+		protected set { currentInteractable = value; }
+	}
+
 	[SerializeField, Tooltip("The transform whose position will decide where " +
 		"this agent hold's interactable game-objects.")]
 	protected Transform pickupPoint = null;
@@ -56,6 +60,10 @@ public class Agent : MonoBehaviour, Interactable.IAssociatedAgentInfo {
 	/// </summary>
 	/// <param name="objectToPickUp"> The interactable that the agent will pick up. </param>
 	protected TaskState PickupObject(Interactable objectToPickUp) {
+		if (!objectToPickUp) {
+			return TaskState.Failed;
+		}
+
 		if (!currentInteractable && objectToPickUp.Pickup(this, true)) {
 			currentInteractable = objectToPickUp;
 			return TaskState.Succeeded;
