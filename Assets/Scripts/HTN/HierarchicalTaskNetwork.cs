@@ -83,13 +83,20 @@ public class HierarchicalTaskNetwork {
 			// Gets a set of tasks that solve the preconditions of the task to
 			// decompose.
 			for (int i = 0; i < validTasks.Length; ++i) {
+				if (validTasks[i] == null) {
+					continue;
+				}
+
 				validTasks[i].UpdateGoal(validTasks[i].Goal.goalType,
 					taskToDecompose.Goal.goalObject,
 					taskToDecompose.Goal.goalPosition);
 				UpdateAlternateTasks(ref validTasks[i]);
 				plan.Push(validTasks[i]);
 				
+				// Find out if a subtask is needed to fullfill the task just
+				// pushed onto the stack.
 				if (!AreAllTasksAddressed(plan.Reverse().ToArray())) {
+					// Remove the task so it can be replaced with a compound task.
 					plan.Pop();
 					Stack<Task> subtaskStack = DecomposeTask(validTasks[i], accessibleTasks);
 					CompoundTask compoundTask = new CompoundTask(subtaskStack,
@@ -107,6 +114,14 @@ public class HierarchicalTaskNetwork {
 					// All the goal's preconditions have been addressed, break.
 					break;
 				} else {
+					Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
+
+					for (int j = 0; j < validTasks.Length; ++j) {
+						if (!plan.Contains(validTasks[j]) && !MissingCondition(validTasks[j].Postconditions, planPostconditions)) {
+							validTasks[j] = null;
+						}
+					}
+
 					// Remove the final task since the plan isn't finished yet.
 					plan.Pop();
 					continue;
@@ -115,7 +130,7 @@ public class HierarchicalTaskNetwork {
 		}
 
 		if (plan.Count == 0) {
-			// Remeber to add the original task to execute.
+			// No other tasks are required, only add the goal task.
 			plan.Push(taskToDecompose);
 		}
 

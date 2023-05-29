@@ -135,9 +135,9 @@ public class Task {
 	}
 
 	public static bool MissingCondition(Condition[] requiredConditions, Condition[] otherConditions) {
-		foreach (Condition condition in requiredConditions) {
-			bool foundCondition = false;
+		bool foundCondition = false;
 
+		foreach (Condition condition in requiredConditions) {
 			foreach (Condition otherCondition in otherConditions) {
 				if (otherCondition.name == condition.name) {
 					foundCondition = true;
@@ -146,11 +146,13 @@ public class Task {
 			}
 
 			if (!foundCondition) {
-				return false;
+				return true;
 			}
+			
+			foundCondition = false;
 		}
 
-		return false;
+		return foundCondition;
 	}
 
 	/// <summary>
