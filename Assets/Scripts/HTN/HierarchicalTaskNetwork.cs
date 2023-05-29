@@ -23,10 +23,6 @@ public class HierarchicalTaskNetwork {
 	/// </summary>
 	private Task[] accessibleTasks = null;
 	private Stack<Task> plan = new Stack<Task>();
-	/// <summary>
-	/// Used for sharing conditions between different tasks.
-	/// </summary>
-	private List<Condition> conditionBlackboard = new List<Condition>();
 
 	public HierarchicalTaskNetwork(Task[] goals, Task[] accessibleTasks) {
 		this.goal = null;
@@ -47,22 +43,7 @@ public class HierarchicalTaskNetwork {
 	}
 
 	public void Update() {
-		FindGoal();
 		ExecutePlan();
-	}
-
-	private void FindGoal() {
-		if (goal != null) {
-			return;
-		}
-
-		Task newGoal = null;
-		// TODO: find the best goal to achieve here.
-
-		if (goal != newGoal) {
-			// Only set the goal if it's different to the current one.
-			SetGoal(newGoal);
-		}
 	}
 
 	#region Creating a HTN Plan
@@ -123,7 +104,6 @@ public class HierarchicalTaskNetwork {
 					// All the goal's preconditions have been addressed, break.
 					break;
 				} else {
-					// TODO: remove other tasks that only share the same postconditions and have no more
 					// Remove the final task since the plan isn't finished yet.
 					plan.Pop();
 					continue;
@@ -204,7 +184,6 @@ public class HierarchicalTaskNetwork {
 			goalTask.Preconditions)).ToArray();
 	}
 
-	// TODO: add a task even if it's condition only partially matches.
 	/// <summary>
 	/// Returns an array of tasks that completely or partially satisfy the 
 	/// parameter task's preconditions.
@@ -235,9 +214,9 @@ public class HierarchicalTaskNetwork {
 		if (goal == null ||
 			(plan != null &&
 			// Has the HTN's goal been achieved?
-			((this.currentTaskState == TaskState.Succeeded && plan.Count == 0) ||
+			((currentTaskState == TaskState.Succeeded && plan.Count == 0) ||
 			// Is there no plan?
-			plan.Count == 0))) {
+			(plan.Count == 0 && currentTaskToExecute == null)))) {
 			return;
 		}
 

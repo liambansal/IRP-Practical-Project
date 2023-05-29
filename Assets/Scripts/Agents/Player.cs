@@ -144,8 +144,6 @@ public class Player : Agent {
 			OrderAIToDropObject(pressurePlate.TriggerGameObject);
 			instantiatedPing.SetPing(pressurePlate);
 			// Case for activating an interactable item.
-		} else if (true == false) {
-			// TODO: create plan to activate the interactable.
 		} else {
 			OrderAIToMove(instantiatedPing.gameObject);
 			instantiatedPing.SetPing("Move here!");

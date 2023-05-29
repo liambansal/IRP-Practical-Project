@@ -184,9 +184,7 @@ public class AIAgent : Agent {
 			stayGoal);
 		#endregion
 		#region Look Around Task
-		Condition[] lookAroundPreconditions = new Condition[] {
-			new Condition("In Position")
-		};
+		Condition[] lookAroundPreconditions = new Condition[] { };
 		Condition[] lookAroundPostconditions = new Condition[] {
 			new Condition("See Object")
 		};
@@ -238,7 +236,7 @@ public class AIAgent : Agent {
 		}
 
 		if (ArrivedAtDestination()) {
-			return TaskState.Succeeded;
+			return TaskState.Executing;
 		}
 
 		return TaskState.Executing;
@@ -284,7 +282,6 @@ public class AIAgent : Agent {
 	}
 
 	private TaskState LookAround() {
-		// TODO: make the AI look around them by turning their head.
 		return TaskState.Succeeded;
 	}
 	#endregion
