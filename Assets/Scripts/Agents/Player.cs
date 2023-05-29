@@ -51,6 +51,10 @@ public class Player : Agent {
 		taskNetwork.SetGoal(pickupTask);
 	}
 
+	public void OrderAIToDropObject() {
+		OrderAIToDropObject(null, null);
+	}
+
 	public void OrderAIToDropObject(GameObject objectToDrop,
 		Transform dropPosition) {
 		PrimitiveTask dropTask = aiAgent.DropTask;
