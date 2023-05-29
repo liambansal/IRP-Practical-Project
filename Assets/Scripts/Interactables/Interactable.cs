@@ -30,7 +30,7 @@ public abstract class Interactable : MonoBehaviour, IPingInfo {
 		/// <summary>
 		/// The object that triggers this interactable to become active.		
 		/// </summary>
-		public ICanTrigger Trigger {
+		public IIsTrigger Trigger {
 			get;
 			set;
 		}
@@ -40,7 +40,7 @@ public abstract class Interactable : MonoBehaviour, IPingInfo {
 	/// To be implemented by interactable item that can act as a trigger for 
 	/// others to activate.
 	/// </summary>
-	public interface ICanTrigger {
+	public interface IIsTrigger {
 		public bool Active {
 			get;
 			set;

@@ -17,6 +17,11 @@ public class Task {
 			name = condition;
 			satisfied = false;
 		}
+
+		public Condition(string condition, bool state) {
+			name = condition;
+			satisfied = state;
+		}
 	}
 
 	public struct GoalData {

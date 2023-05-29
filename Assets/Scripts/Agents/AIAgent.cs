@@ -15,11 +15,23 @@ public class AIAgent : Agent {
 		get;
 		private set;
 	}
-	public PrimitiveTask FollowGoal {
+	public PrimitiveTask FollowTask {
 		get;
 		private set;
 	}
-	public PrimitiveTask StayGoal {
+	public PrimitiveVectorTask MoveToTask {
+		get;
+		private set;
+	}
+	public PrimitiveTask StayTask {
+		get;
+		private set;
+	}
+	public PrimitiveInteractableTask PickupTask {
+		get;
+		private set;
+	}
+	public PrimitiveTask DropTask {
 		get;
 		private set;
 	}
@@ -110,7 +122,7 @@ public class AIAgent : Agent {
 			new Condition("In Position")
 		};
 		GoalData followGoal = new GoalData(GoalType.Follow, null);
-		PrimitiveTask followTask = new PrimitiveTask(Follow,
+		FollowTask = new PrimitiveTask(Follow,
 			followPreconditions,
 			followPostconditions,
 			followGoal);
@@ -124,7 +136,7 @@ public class AIAgent : Agent {
 			new Condition("In Range")
 		};
 		GoalData moveToGoal = new GoalData(GoalType.MoveTo, null);
-		PrimitiveVectorTask moveToTask = new PrimitiveVectorTask(MoveTo,
+		MoveToTask = new PrimitiveVectorTask(MoveTo,
 			Vector3.zero,
 			moveToPreconditions,
 			moveToPostconditions,
@@ -132,7 +144,7 @@ public class AIAgent : Agent {
 		#endregion
 		#region PickupTask
 		Condition[] pickupPreconditions = new Condition[] {
-			new Condition("Not Holding Object"),
+			new Condition("Not Holding Object", true),
 			new Condition("See Object"),
 			new Condition("In Range")
 		};
@@ -140,7 +152,7 @@ public class AIAgent : Agent {
 			new Condition("Holding Object")
 		};
 		GoalData pickupGoal = new GoalData(GoalType.Pickup, null);
-		PrimitiveInteractableTask pickupTask = new PrimitiveInteractableTask(PickupObject,
+		PickupTask = new PrimitiveInteractableTask(PickupObject,
 			pickupPreconditions,
 			pickupPostconditions,
 			pickupGoal);
@@ -150,10 +162,10 @@ public class AIAgent : Agent {
 			new Condition("Holding Object")
 		};
 		Condition[] dropPostconditions = new Condition[] {
-			new Condition("Not Holding Object")
+			new Condition("Not Holding Object", true)
 		};
 		GoalData dropGoal = new GoalData(GoalType.Drop, null);
-		PrimitiveTask dropTask = new PrimitiveTask(DropObject,
+		DropTask = new PrimitiveTask(DropObject,
 			dropPreconditions,
 			dropPostconditions,
 			dropGoal);
@@ -166,7 +178,7 @@ public class AIAgent : Agent {
 			new Condition("Staying")
 		};
 		GoalData stayGoal = new GoalData(GoalType.Stay, null);
-		PrimitiveTask stayTask = new PrimitiveTask(Stay,
+		StayTask = new PrimitiveTask(Stay,
 			stayPreconditions,
 			stayPostconditions,
 			stayGoal);
@@ -186,26 +198,16 @@ public class AIAgent : Agent {
 		#endregion
 
 		Task[] networkTasks = new Task[] {
-			followTask,
-			moveToTask,
-			pickupTask,
-			dropTask,
-			stayTask,
+			FollowTask,
+			MoveToTask,
+			PickupTask,
+			DropTask,
+			StayTask,
 			lookAroundTask
 		};
 
-		FollowGoal = new PrimitiveTask(Follow,
-			followPreconditions,
-			followPostconditions,
-			followGoal);
-		StayGoal = new PrimitiveTask(Stay,
-			stayPreconditions,
-			stayPostconditions,
-			stayGoal);
-
 		Task[] goals = new Task[] {
-			FollowGoal,
-			StayGoal
+			StayTask
 		};
 
 		HierarchicalTaskNetwork = new HierarchicalTaskNetwork(goals, networkTasks);
@@ -231,8 +233,8 @@ public class AIAgent : Agent {
 		}
 
 		if (!moveDestinationSet) {
-			Vector3 targetDirection = (FollowGoal.Goal.goalObject.transform.position - transform.position).normalized;
-			Vector3 targetDestination = FollowGoal.Goal.goalObject.transform.position - targetDirection * followDistance;
+			Vector3 targetDirection = (FollowTask.Goal.goalObject.transform.position - transform.position).normalized;
+			Vector3 targetDestination = FollowTask.Goal.goalObject.transform.position - targetDirection * followDistance;
 			moveDestinationSet = navMeshAgent.SetDestination(targetDestination);
 		}
 

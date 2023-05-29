@@ -3,7 +3,7 @@
 
 using UnityEngine;
 
-public class WeightedCube : Interactable, Interactable.ICanTrigger {
+public class WeightedCube : Interactable, Interactable.IIsTrigger {
 	public bool Active {
 		get { return active; }
 		set { }

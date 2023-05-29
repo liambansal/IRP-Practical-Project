@@ -4,12 +4,12 @@
 using UnityEngine;
 using static Interactable;
 
-public class PressurePlate : MonoBehaviour, IHasTrigger, ICanTrigger {
+public class PressurePlate : MonoBehaviour, IHasTrigger, IIsTrigger {
 	public bool Active {
 		get { return active; }
 		set { }
 	}
-	public ICanTrigger Trigger {
+	public IIsTrigger Trigger {
 		get { return trigger; }
 		set { }
 	}
@@ -17,7 +17,7 @@ public class PressurePlate : MonoBehaviour, IHasTrigger, ICanTrigger {
 	private bool active = false;
 	[SerializeField, Tooltip("The object that triggers this " +
 		"interactable to become active.")]
-	private ICanTrigger trigger = null;
+	private IIsTrigger trigger = null;
 
 	private void OnTriggerEnter(Collider other) {
 		CheckForTrigger(other, true);
@@ -32,7 +32,7 @@ public class PressurePlate : MonoBehaviour, IHasTrigger, ICanTrigger {
 	}
 
 	private void CheckForTrigger(Collider collider, bool touchingCollider) {
-		ICanTrigger trigger = collider.GetComponent<ICanTrigger>();
+		IIsTrigger trigger = collider.GetComponent<IIsTrigger>();
 
 		if (trigger == null) {
 			return;

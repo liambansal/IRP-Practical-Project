@@ -97,32 +97,45 @@ public class HierarchicalTaskNetwork {
 		Task[] validTasks = GetValidTasks(taskToDecompose, availableTasks);
 		Stack<Task> plan = new Stack<Task>();
 
-		// Get the task(s) that solve the goal tasks preconditions and add to a stack
-		// loop over tasks that meet the goals preconditions
-		foreach (Task task in validTasks) {
-			task.UpdateGoal(task.Goal.goalType, taskToDecompose.Goal.goalObject);
+		if (!taskToDecompose.AllConditionsSatisfied(taskToDecompose.Preconditions)) {
+			// Get the task(s) that solve the goal tasks preconditions and add to a stack
+			// loop over tasks that meet the goals preconditions
+			foreach (Task task in validTasks) {
+				task.UpdateGoal(task.Goal.goalType, taskToDecompose.Goal.goalObject);
 
-			if (task is PrimitiveVectorTask) {
-				(task as PrimitiveVectorTask).SetVector(task.Goal.goalObject.transform.position);
-			} else if (task is PrimitiveInteractableTask) {
-				(task as PrimitiveInteractableTask).SetInteractable(task.Goal.goalObject.GetComponent<Interactable>());
+				// Sets the data that's used as the argument for the tasks with parameters.
+				if (task is PrimitiveVectorTask) {
+					(task as PrimitiveVectorTask).SetVector(task.Goal.goalObject.transform.position);
+				} else if (task is PrimitiveInteractableTask) {
+					(task as PrimitiveInteractableTask).SetInteractable(task.Goal.goalObject.GetComponent<Interactable>());
+				}
+
+				plan.Push(task);
+				Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
+
+				if (!MissingCondition(goal.Preconditions, planPostconditions)) {
+					// Remeber to add the original task to execute.
+					plan.Push(taskToDecompose);
+					// All the goal's preconditions have been addressed, break.
+					break;
+				} else {
+					// TODO: remove other tasks that only share the same postconditions and have no more
+					continue;
+				}
+			}
+		// Sets the data that's used as the argument for the tasks with parameters.
+		} else {
+			if (taskToDecompose is PrimitiveVectorTask) {
+				(taskToDecompose as PrimitiveVectorTask).SetVector(taskToDecompose.Goal.goalObject.transform.position);
+			} else if (taskToDecompose is PrimitiveInteractableTask) {
+				(taskToDecompose as PrimitiveInteractableTask).SetInteractable(taskToDecompose.Goal.goalObject.GetComponent<Interactable>());
 			}
 
-			plan.Push(task);
-			Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
-
-			if (!MissingCondition(goal.Preconditions, planPostconditions)) {
-				// Remeber to add the original task to execute.
-				plan.Push(taskToDecompose);
-				// All the goal's preconditions have been addressed, break.
-				break;
-			} else {
-				// TODO: remove other tasks that only share the same postconditions and have no more
-				continue;
-			}
+			// Remeber to add the original task to execute.
+			plan.Push(taskToDecompose);
 		}
 
-		// loop over the planned tasks to check all preconditions have been addressed
+		// TODO: loop over the planned tasks to check all preconditions have been addressed
 
 		// if all new tasks' preconditions are met
 		if (true) {

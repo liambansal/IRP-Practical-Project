@@ -5,14 +5,14 @@ using UnityEngine;
 using static Interactable;
 
 public class Door : MonoBehaviour, IHasTrigger {
-	public ICanTrigger Trigger {
+	public IIsTrigger Trigger {
 		get { return trigger; }
 		set { }
 	}
 
 	[SerializeField, Tooltip("The object that triggers this " +
 		"interactable to become active.")]
-	private ICanTrigger trigger = null;
+	private IIsTrigger trigger = null;
 
 	private void Update() {
 		IsTriggered();

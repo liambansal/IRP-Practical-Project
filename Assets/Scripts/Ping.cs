@@ -1,6 +1,7 @@
 // Written by Liam Bansal
 // Date Created: 9/5/2023
 
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,14 +28,14 @@ public class Ping : MonoBehaviour {
 	/// How long in seconds the ping is displayed on-screen for.
 	/// </summary>
 	private float lifetime = 4.0f;
-	private Text pingName = null;
+	private TextMeshProUGUI pingName = null;
 
 	public void SetPing(IPingInfo pingInfo) {
 		pingName.text = pingInfo.ObjectName;
 	}
 
 	private void Awake() {
-		pingName = GetComponent<Text>();
+		pingName = GetComponentInChildren<TextMeshProUGUI>();
 	}
 
 	private void Update() {

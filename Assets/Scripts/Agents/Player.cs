@@ -3,6 +3,8 @@
 
 using StarterAssets;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using static Interactable;
 
 /// <summary>
 /// Controls the player's response to all device inputs such as movement, 
@@ -12,18 +14,42 @@ public class Player : Agent {
 	private ThirdPersonController characterController = null;
 	private AIAgent aiAgent = null;
 	private HierarchicalTaskNetwork taskNetwork = null;
+	[SerializeField, Tooltip("The UI element used for pinging an object.")]
+	private GameObject pingPrefab = null;
 
 	public void OrderAIToFollow() {
-		PrimitiveTask followTask = aiAgent.FollowGoal;
+		PrimitiveTask followTask = aiAgent.FollowTask;
 		followTask.UpdateGoal(Task.GoalType.Follow, gameObject);
 		taskNetwork.SetGoal(followTask);
 	}
 
+	public void OrderAIToMove(GameObject moveDestination) {
+		PrimitiveVectorTask moveTask = aiAgent.MoveToTask;
+		moveTask.UpdateGoal(Task.GoalType.MoveTo, moveDestination);
+		moveTask.ChangeCondition(Task.ConditionLists.Preconditions,
+			"Has Destination",
+			"",
+			true);
+		taskNetwork.SetGoal(moveTask);
+	}
+
 	public void OrderAIToStay() {
-		PrimitiveTask stayTask = aiAgent.StayGoal;
+		PrimitiveTask stayTask = aiAgent.StayTask;
 		// Agent should prefer tasks that satisfy this goal type over others.
 		stayTask.UpdateGoal(Task.GoalType.MoveTo, aiAgent.gameObject);
 		taskNetwork.SetGoal(stayTask);
+	}
+
+	public void OrderAIToPickupObject(Interactable interactable) {
+		PrimitiveInteractableTask pickupTask = aiAgent.PickupTask;
+		pickupTask.UpdateGoal(Task.GoalType.Pickup, interactable.gameObject);
+		taskNetwork.SetGoal(pickupTask);
+	}
+
+	public void OrderAIToDropObject() {
+		PrimitiveTask dropTask = aiAgent.DropTask;
+		dropTask.UpdateGoal(Task.GoalType.Drop, null);
+		taskNetwork.SetGoal(dropTask);
 	}
 
 	protected override void Awake() {
@@ -38,7 +64,7 @@ public class Player : Agent {
 
 	protected override void Update() {
 		base.Update();
-		Interact();
+		ProcessPlayerInput();
 	}
 
 	protected override void FixedUpdate() {
@@ -66,6 +92,11 @@ public class Player : Agent {
 		taskNetwork = aiAgent.HierarchicalTaskNetwork;
 	}
 
+	private void ProcessPlayerInput() {
+		Interact();
+		Ping();
+	}
+
 	private void Interact() {
 		if (!characterController.Input.interact) {
 			return;
@@ -86,12 +117,35 @@ public class Player : Agent {
 			return;
 		}
 
-		// TODO: raycast for position to place ping
-		// TODO: get type of marker to place
-		// TODO: create ping marker
-		// TODO: give new goal to AI based on type of marker
-		// if object is hit, pick it up
-		// if ground was hit, move to
-		// if pressure plate was hit and ai is holding object, drop object there
+		characterController.Input.ping = false;
+		Vector2 mousePosition = Mouse.current.position.ReadValue();
+		Ray ray = Camera.main.ScreenPointToRay(mousePosition);
+		const int raycastDistance = 20;
+		Physics.Raycast(ray,
+			out RaycastHit raycastHit,
+			raycastDistance);
+		Debug.DrawRay(ray.origin, ray.direction * raycastDistance, Color.yellow, Mathf.Infinity);
+
+		if (!raycastHit.collider) {
+			return;
+		}
+
+		const int pingYOffset = 1;
+		Vector3 pingPosition = raycastHit.point + Vector3.up * pingYOffset;
+		Ping instantiatedPing = Instantiate(pingPrefab, pingPosition, Quaternion.identity, null).GetComponentInChildren<Ping>();
+		Interactable interactableScript = raycastHit.collider.GetComponent<Interactable>();
+
+		if (interactableScript &&
+			interactableScript is IIsTrigger &&
+			!(interactableScript is IHasTrigger)) {
+			OrderAIToPickupObject(interactableScript);
+			instantiatedPing.SetPing(interactableScript);
+		} else if (interactableScript &&
+			interactableScript is IHasTrigger) {
+			OrderAIToDropObject();
+			instantiatedPing.SetPing(interactableScript);
+		} else {
+			OrderAIToMove(instantiatedPing.gameObject);
+		}
 	}
 }

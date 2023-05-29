@@ -65,6 +65,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pickupPoint: {fileID: 7393744753717634676}
+  pingPrefab: {fileID: 1562617968290046289, guid: 932b333daae74cb45a87e3221a5fc573, type: 3}
 --- !u!4 &7393744753717634676 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 224936155634608652, guid: 64dce48905ffd9b4293e595fa6941544, type: 3}
