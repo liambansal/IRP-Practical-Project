@@ -228,4 +228,58 @@ public class Task {
 			goal.goalObject = goalObject;
 		}
 	}
+
+	/// <summary>
+	/// Executes a task by calling its associated delegate method.
+	/// </summary>
+	/// <param name="taskToExecute"> The task to execute. </param>
+	/// <param name="taskState"> State of the tasks execution. </param>
+	/// <returns> True if the task is working correctly. False if the task has 
+	/// stopped working. </returns>
+	public bool ExecuteTask(ref Task taskToExecute, ref TaskState taskState) {
+		if (taskToExecute is PrimitiveTask &&
+			!(taskToExecute is PrimitiveVectorTask) &&
+			!(taskToExecute is PrimitiveInteractableTask)) {
+			taskState = (taskToExecute as PrimitiveTask).Task();
+		} else if (taskToExecute is PrimitiveVectorTask) {
+			taskState = (taskToExecute as PrimitiveVectorTask).Task((taskToExecute as PrimitiveVectorTask).Vector);
+		} else if (taskToExecute is PrimitiveInteractableTask) {
+			taskState = (taskToExecute as PrimitiveInteractableTask).Task((taskToExecute as PrimitiveInteractableTask).Interactable);
+		} else if (taskToExecute is CompoundTask) {
+			taskState = (taskToExecute as CompoundTask).ExecuteSubtasks();
+		}
+
+		switch (taskState) {
+			case TaskState.NotStarted: {
+				return true;
+			}
+			case TaskState.Started: {
+				return true;
+			}
+			case TaskState.Executing: {
+				return true;
+			}
+			// Enables all of the current task's postconditions.
+			case TaskState.Succeeded: {
+				for (int i = 0; i < taskToExecute.Postconditions.Length; ++i) {
+					taskToExecute.ChangeCondition(ConditionLists.Postconditions,
+						taskToExecute.Postconditions[i].name,
+						"",
+						true);
+				}
+
+				taskToExecute = null;
+				return true;
+			}
+			case TaskState.Failed: {
+				return false;
+			}
+			case TaskState.Cancelled: {
+				return false;
+			}
+			default: {
+				return false;
+			}
+		}
+	}
 }

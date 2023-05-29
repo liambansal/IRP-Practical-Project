@@ -12,6 +12,9 @@ public class CompoundTask : Task {
 		private set;
 	}
 
+	private Task currentTaskToExecute = null;
+	private TaskState currentTaskState = TaskState.NotStarted;
+
 	public CompoundTask(Stack<Task> subtasks,
 		Condition[] preconditions,
 		Condition[] postconditions,
@@ -23,6 +26,20 @@ public class CompoundTask : Task {
 		Subtasks = subtasks;
 	}
 
-	// TODO: create a method that executes subtasks one by one.
-	// If a subtask is a compound task then use recursion on the method above.
+	public TaskState ExecuteSubtasks() {
+		if (currentTaskToExecute == null ||
+			currentTaskState == TaskState.Succeeded) {
+			currentTaskToExecute = Subtasks.Pop();
+			currentTaskState = TaskState.NotStarted;
+		}
+
+		currentTaskToExecute.ExecuteTask(ref currentTaskToExecute, ref currentTaskState);
+
+		if (currentTaskState == TaskState.Succeeded && Subtasks.Count > 0) {
+			currentTaskToExecute = null;
+			currentTaskState = TaskState.NotStarted;
+		}
+
+		return currentTaskState;
+	}
 }

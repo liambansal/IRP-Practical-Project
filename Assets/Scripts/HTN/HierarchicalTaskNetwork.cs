@@ -251,62 +251,11 @@ public class HierarchicalTaskNetwork {
 
 		if (currentTaskToExecute == null) {
 			currentTaskToExecute = plan.Pop();
+			currentTaskState = TaskState.NotStarted;
 		}
 
-		// Checks the task is executable.
-		//if (!currentTaskToExecute.AllConditionsSatisfied(currentTaskToExecute.Preconditions)) {
-		//	// TODO: append more tasks to satisfy the current tasks preconditions.
-		//	return;
-		//}
-
-		TaskState currentTaskState = TaskState.NotStarted;
-
-		if (currentTaskToExecute is PrimitiveTask &&
-			!(currentTaskToExecute is PrimitiveVectorTask) &&
-			!(currentTaskToExecute is PrimitiveInteractableTask)) {
-			currentTaskState = (currentTaskToExecute as PrimitiveTask).Task();
-		} else if (currentTaskToExecute is PrimitiveVectorTask) {
-			currentTaskState = (currentTaskToExecute as PrimitiveVectorTask).Task((currentTaskToExecute as PrimitiveVectorTask).Vector);
-		} else if (currentTaskToExecute is PrimitiveInteractableTask) {
-			currentTaskState = (currentTaskToExecute as PrimitiveInteractableTask).Task((currentTaskToExecute as PrimitiveInteractableTask).Interactable);
-		} else if (currentTaskToExecute is CompoundTask) {
-			// TODO: call method belonging to CompoundTask that executes
-			// the subtasks one by one.
-		}
-
-		switch (currentTaskState) {
-			case TaskState.NotStarted: {
-				break;
-			}
-			case TaskState.Started: {
-				break;
-			}
-			case TaskState.Executing: {
-				break;
-			}
-			// Enables all of the current task's postconditions.
-			case TaskState.Succeeded: {
-				for (int i = 0; i < currentTaskToExecute.Postconditions.Length; ++i) {
-					currentTaskToExecute.ChangeCondition(ConditionLists.Postconditions,
-						currentTaskToExecute.Postconditions[i].name,
-						"",
-						true);
-				}
-
-				currentTaskToExecute = null;
-				break;
-			}
-			case TaskState.Failed: {
-				// TODO: check plan is still valid and try the task again.
-				break;
-			}
-			case TaskState.Cancelled: {
-				// TODO: check plan is still valid and try the task again.
-				break;
-			}
-			default: {
-				break;
-			}
+		if (!currentTaskToExecute.ExecuteTask(ref currentTaskToExecute, ref currentTaskState)) {
+			CancelPlan();
 		}
 	}
 }

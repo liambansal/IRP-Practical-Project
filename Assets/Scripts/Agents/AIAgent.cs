@@ -227,7 +227,6 @@ public class AIAgent : Agent {
 	/// </summary>
 	private TaskState Follow() {
 		if (!navMeshAgent.isOnNavMesh) {
-			navMeshAgent.ResetPath();
 			moveDestinationSet = false;
 			return TaskState.Failed;
 		}
@@ -251,7 +250,6 @@ public class AIAgent : Agent {
 	/// <param name="targetStandPosition"> The position where the AI agent will move to. </param>
 	private TaskState MoveTo(Vector3 targetStandPosition) {
 		if (!navMeshAgent.isOnNavMesh) {
-			navMeshAgent.ResetPath();
 			moveDestinationSet = false;
 			return TaskState.Failed;
 		}
@@ -271,6 +269,10 @@ public class AIAgent : Agent {
 	/// Makes the AI agent stand in place at their current position indefinitely.
 	/// </summary>
 	private TaskState Stay() {
+		if (!navMeshAgent.isOnNavMesh) {
+			return TaskState.Failed;
+		}
+
 		if (moveDestinationSet ||
 			navMeshAgent.hasPath ||
 			navMeshAgent.pathPending) {
