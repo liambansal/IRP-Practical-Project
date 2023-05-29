@@ -3,6 +3,7 @@
 
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using static Interactable;
 
 public class Door : MonoBehaviour, IHasTrigger {
@@ -32,6 +33,12 @@ public class Door : MonoBehaviour, IHasTrigger {
 		IsTriggered();
 	}
 
+	private void OnTriggerEnter(Collider other) {
+		if (other.CompareTag("Player") || other.CompareTag("AI Agent")) {
+			LoadNextScene();
+		}
+	}
+
 	private void GetComponents() {
 		animator = GetComponent<Animator>();
 	}
@@ -52,5 +59,13 @@ public class Door : MonoBehaviour, IHasTrigger {
 		}
 
 		animator.SetBool("Active", true);
+	}
+
+	private void LoadNextScene() {
+		if (SceneManager.GetActiveScene().buildIndex == SceneManager.sceneCount - 1) {
+			SceneManager.LoadScene(0);
+		}
+
+		SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
 	}
 }

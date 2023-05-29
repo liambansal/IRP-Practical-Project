@@ -54,18 +54,24 @@ public class PressurePlate : MonoBehaviour,
 	private void CheckForTrigger(Collider collider, bool touchingCollider) {
 		IIsTrigger trigger = collider.GetComponent<IIsTrigger>();
 
-		if (trigger == null) {
+		if (trigger == null &&
+			!collider.CompareTag("Player") &&
+			!collider.CompareTag("AI Agent")) {
 			return;
 		}
 
-		if (trigger.Active && touchingCollider) {
+		if (touchingCollider) {
 			active = true;
+
+			if (trigger != null) {
+				this.trigger = trigger;
+				TriggerGameObject = collider.gameObject;
+			}
+		} else if ((trigger != null && !collider.CompareTag("Player") && !collider.CompareTag("AI Agent")) ||
+			(trigger == null && (collider.CompareTag("Player") || collider.CompareTag("AI Agent")))) {
+			active = false;
 			this.trigger = trigger;
 			TriggerGameObject = collider.gameObject;
-		} else {
-			active = false;
-			this.trigger = null;
-			TriggerGameObject = null;
 		}
 	}
 }

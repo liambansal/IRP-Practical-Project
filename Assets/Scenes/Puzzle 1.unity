@@ -122,7 +122,7 @@ NavMeshSettings:
     preserveTilesOutsideBounds: 0
     debug:
       m_Flags: 0
-  m_NavMeshData: {fileID: 23800000, guid: b79009602c660c74eba0c50945b57e38, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 1d1e8e63007a2254283ed23bd0b1d72d, type: 2}
 --- !u!1 &12302871
 GameObject:
   m_ObjectHideFlags: 0
@@ -213,7 +213,7 @@ GameObject:
   - component: {fileID: 181557186}
   - component: {fileID: 181557185}
   - component: {fileID: 181557184}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -546,7 +546,7 @@ GameObject:
   - component: {fileID: 416326925}
   - component: {fileID: 416326924}
   - component: {fileID: 416326923}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1457,7 +1457,7 @@ Mesh:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: pb_Mesh-2462286
+  m_Name: pb_Mesh-2709304
   serializedVersion: 11
   m_SubMeshes:
   - serializedVersion: 2
@@ -1679,7 +1679,7 @@ GameObject:
   - component: {fileID: 1496734519}
   - component: {fileID: 1496734518}
   - component: {fileID: 1496734517}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2440,7 +2440,7 @@ GameObject:
   - component: {fileID: 2037843128}
   - component: {fileID: 2037843127}
   - component: {fileID: 2037843126}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2876,7 +2876,7 @@ PrefabInstance:
       objectReference: {fileID: 1180951921}
     - target: {fileID: 3824489725727476407, guid: 79edd92e0d8a88f46aa113816c1487b1, type: 3}
       propertyPath: m_VersionIndex
-      value: 26
+      value: 107
       objectReference: {fileID: 0}
     - target: {fileID: 3824489725727476411, guid: 79edd92e0d8a88f46aa113816c1487b1, type: 3}
       propertyPath: m_Name
