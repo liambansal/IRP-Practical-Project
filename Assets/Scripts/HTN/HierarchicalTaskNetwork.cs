@@ -100,8 +100,14 @@ public class HierarchicalTaskNetwork {
 		// Get the task(s) that solve the goal tasks preconditions and add to a stack
 		// loop over tasks that meet the goals preconditions
 		foreach (Task task in validTasks) {
-			// TODO: set a position to move to, interactable here.
 			task.UpdateGoal(task.Goal.goalType, taskToDecompose.Goal.goalObject);
+
+			if (task is PrimitiveVectorTask) {
+				(task as PrimitiveVectorTask).SetVector(task.Goal.goalObject.transform.position);
+			} else if (task is PrimitiveInteractableTask) {
+				(task as PrimitiveInteractableTask).SetInteractable(task.Goal.goalObject.GetComponent<Interactable>());
+			}
+
 			plan.Push(task);
 			Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
 

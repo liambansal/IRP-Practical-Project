@@ -56,6 +56,10 @@ public class PrimitiveVectorTask : PrimitiveTask {
 		Preconditions = preconditions;
 		Postconditions = postconditions;
 	}
+
+	public void SetVector(Vector3 vector) {
+		Vector = vector;
+	}
 }
 
 /// <summary>
