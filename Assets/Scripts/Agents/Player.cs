@@ -43,9 +43,9 @@ public class Player : Agent {
 		taskNetwork.SetGoal(pickupTask);
 	}
 
-	public void OrderAIToDropObject() {
+	public void OrderAIToDropObject(GameObject objectToDrop) {
 		PrimitiveTask dropTask = aiAgent.DropTask;
-		dropTask.UpdateGoal(Task.GoalType.Drop, null);
+		dropTask.UpdateGoal(Task.GoalType.Drop, objectToDrop);
 		taskNetwork.SetGoal(dropTask);
 	}
 
@@ -141,7 +141,7 @@ public class Player : Agent {
 			instantiatedPing.SetPing(interactableScript);
 			// Case for dropping an interactable item to trigger something.
 		} else if (pressurePlate && aiAgent) {
-			OrderAIToDropObject();
+			OrderAIToDropObject(pressurePlate.TriggerGameObject);
 			instantiatedPing.SetPing(pressurePlate);
 			// Case for activating an interactable item.
 		} else if (true == false) {

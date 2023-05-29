@@ -34,6 +34,10 @@ public abstract class Interactable : MonoBehaviour, IPingInfo {
 			get;
 			set;
 		}
+		public GameObject TriggerGameObject {
+			get;
+			set;
+		}
 	}
 
 	/// <summary>

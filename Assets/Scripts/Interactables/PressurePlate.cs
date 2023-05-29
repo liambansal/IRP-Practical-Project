@@ -4,13 +4,20 @@
 using UnityEngine;
 using static Interactable;
 
-public class PressurePlate : MonoBehaviour, IHasTrigger, IIsTrigger, Ping.IPingInfo {
+public class PressurePlate : MonoBehaviour,
+	IHasTrigger,
+	IIsTrigger,
+	Ping.IPingInfo {
 	public bool Active {
 		get { return active; }
 		set { }
 	}
 	public IIsTrigger Trigger {
 		get { return trigger; }
+		set { }
+	}
+	public GameObject TriggerGameObject {
+		get { return triggerGameObject; }
 		set { }
 	}
 	public string ObjectName {
@@ -28,6 +35,9 @@ public class PressurePlate : MonoBehaviour, IHasTrigger, IIsTrigger, Ping.IPingI
 	private IIsTrigger trigger = null;
 	[SerializeField]
 	private string objectName = "";
+	[SerializeField, Tooltip("The game-object that triggers this " +
+		"interactable to become active.")]
+	private GameObject triggerGameObject = null;
 
 	private void OnTriggerEnter(Collider other) {
 		CheckForTrigger(other, true);
@@ -51,9 +61,11 @@ public class PressurePlate : MonoBehaviour, IHasTrigger, IIsTrigger, Ping.IPingI
 		if (trigger.Active && touchingCollider) {
 			active = true;
 			this.trigger = trigger;
+			TriggerGameObject = collider.gameObject;
 		} else {
 			active = false;
 			this.trigger = null;
+			TriggerGameObject = null;
 		}
 	}
 }

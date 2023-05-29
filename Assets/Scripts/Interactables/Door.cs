@@ -9,10 +9,16 @@ public class Door : MonoBehaviour, IHasTrigger {
 		get { return trigger; }
 		set { }
 	}
+	public GameObject TriggerGameObject {
+		get { return triggerGameObject; }
+		set { }
+	}
 
 	[SerializeField, Tooltip("The object that triggers this " +
 		"interactable to become active.")]
 	private IIsTrigger trigger = null;
+	[SerializeField]
+	private GameObject triggerGameObject = null;
 
 	private void Update() {
 		IsTriggered();

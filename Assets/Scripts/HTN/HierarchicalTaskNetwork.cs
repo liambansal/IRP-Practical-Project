@@ -103,19 +103,18 @@ public class HierarchicalTaskNetwork {
 			for (int i = 0; i < validTasks.Length; ++i) {
 				validTasks[i].UpdateGoal(validTasks[i].Goal.goalType, taskToDecompose.Goal.goalObject);
 				UpdateAlternateTasks(ref validTasks[i]);
+				plan.Push(validTasks[i]);
 				
 				if (!AreAllTasksAddressed(plan.Reverse().ToArray())) {
+					plan.Pop();
 					Stack<Task> subtaskStack = DecomposeTask(validTasks[i], accessibleTasks);
 					CompoundTask compoundTask = new CompoundTask(subtaskStack,
-						validTasks[i].Preconditions,
-						subtaskStack.Peek().Postconditions,
-						subtaskStack.Peek().Goal);
+						subtaskStack.Peek().Preconditions,
+						validTasks[i].Postconditions,
+						validTasks[i].Goal);
 					plan.Push(compoundTask);
-				} else {
-					plan.Push(validTasks[i]);
 				}
 
-				Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
 				// Push the task to decompose prior to checking if all tasks
 				// have been addressed.
 				plan.Push(taskToDecompose);
@@ -156,20 +155,19 @@ public class HierarchicalTaskNetwork {
 
 		// Sets the data that's used as the argument for the tasks with parameters.
 		void UpdateAlternateTasks(ref Task task) {
-			if (task is PrimitiveVectorTask) {
+			if (task is PrimitiveVectorTask && task.Goal.goalObject) {
 				(task as PrimitiveVectorTask).SetVector(task.Goal.goalObject.transform.position);
 				task.ChangeCondition(ConditionLists.Preconditions,
 					"Vector Set",
 					"",
 					true);
-			} else if (task is PrimitiveInteractableTask) {
+			} else if (task is PrimitiveInteractableTask && task.Goal.goalObject) {
 				(task as PrimitiveInteractableTask).SetInteractable(task.Goal.goalObject.GetComponent<Interactable>());
 			}
 		}
 
-		// TODO: return true if the plan has subtasks that satisfy
-		// all the preconditions, and each subtasks has a task that satisfies
-		// its preconditions etc.
+		// Returns true if all the tasks in the plan have been satisfied or
+		// addressed by another plan.
 		bool AreAllTasksAddressed(Task[] plan) {
 			Condition[] planPostconditions = GatherConditions(plan, ConditionLists.Postconditions);
 
