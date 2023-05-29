@@ -193,8 +193,6 @@ public class HierarchicalTaskNetwork {
 		}
 	}
 
-	// TODO: add a bias for tasks that have their postconditions matching
-	// the order of the goal tasks preconditions.
 	/// <summary>
 	/// Orders the tasks by which one is the most optimal to execute first.
 	/// </summary>
@@ -202,12 +200,6 @@ public class HierarchicalTaskNetwork {
 	/// <param name="goalTask"> Where the conditions for ordering the tasks is 
 	/// obtained from. </param>
 	private void OrderTasks(ref Task[] tasks, Task goalTask) {
-		// TODO: Order the available tasks by which one's postconditions satisfies
-		// the goal tasks' preconditions best, and set them in the same order
-		// as the goal tasks preconditions e.g. goal precons = seeObject,
-		// inRange. Then subtasks should be in oder of (seeObject, inRange),
-		// (inRange, otherPostcon, seeObject) seeObject, (otherPostCon,
-		// seeObject), inRange, (inRange, otherPostcon).
 		tasks = tasks.OrderByDescending(task => task.Goal.goalType == goalTask.Goal.goalType).ThenByDescending(task => MatchingConditions(task.Postconditions,
 			goalTask.Preconditions)).ToArray();
 	}
