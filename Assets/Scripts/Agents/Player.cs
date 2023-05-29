@@ -2,7 +2,6 @@
 // Date Created: 9/5/2023
 
 using StarterAssets;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -11,6 +10,21 @@ using UnityEngine;
 /// </summary>
 public class Player : Agent {
 	private ThirdPersonController characterController = null;
+	private AIAgent aiAgent = null;
+	private HierarchicalTaskNetwork taskNetwork = null;
+
+	public void OrderAIToFollow() {
+		PrimitiveTask followTask = aiAgent.FollowGoal;
+		followTask.UpdateGoal(Task.GoalType.Follow, gameObject);
+		taskNetwork.SetGoal(followTask);
+	}
+
+	public void OrderAIToStay() {
+		PrimitiveTask stayTask = aiAgent.StayGoal;
+		// Agent should prefer tasks that satisfy this goal type over others.
+		stayTask.UpdateGoal(Task.GoalType.MoveTo, aiAgent.gameObject);
+		taskNetwork.SetGoal(stayTask);
+	}
 
 	protected override void Awake() {
 		base.Awake();
@@ -19,6 +33,7 @@ public class Player : Agent {
 
 	protected override void Start() {
 		base.Start();
+		FindComponents();
 	}
 
 	protected override void Update() {
@@ -46,6 +61,11 @@ public class Player : Agent {
 		characterController = GetComponent<ThirdPersonController>();
 	}
 
+	private void FindComponents() {
+		aiAgent = GameObject.FindGameObjectWithTag("AI Agent").GetComponent<AIAgent>();
+		taskNetwork = aiAgent.HierarchicalTaskNetwork;
+	}
+
 	private void Interact() {
 		if (!characterController.Input.interact) {
 			return;
@@ -66,11 +86,12 @@ public class Player : Agent {
 			return;
 		}
 
+		// TODO: raycast for position to place ping
+		// TODO: get type of marker to place
 		// TODO: create ping marker
-		// TODO: get type of marker
+		// TODO: give new goal to AI based on type of marker
 		// if object is hit, pick it up
 		// if ground was hit, move to
-		// if pressure plate was hit, drop object there
-		// TODO: give new goal to AI based on type of marker
+		// if pressure plate was hit and ai is holding object, drop object there
 	}
 }

@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 /// <summary>
 /// The base task class that provides the types and properties used by all 
 /// other task classes.
@@ -16,6 +17,32 @@ public class Task {
 			name = condition;
 			satisfied = false;
 		}
+	}
+
+	public struct GoalData {
+		public GoalType goalType;
+		/// <summary>
+		/// The object associated with the goal.
+		/// </summary>
+		public GameObject goalObject;
+
+		public GoalData(GoalType goalType, GameObject goalObject) {
+			this.goalType = goalType;
+			this.goalObject = goalObject;
+		}
+	}
+
+	/// <summary>
+	/// Used to define what type of goal has been set for the HTN to achieve.
+	/// </summary>
+	public enum GoalType {
+		Undefined,
+		Follow,
+		MoveTo,
+		Stay,
+		Pickup,
+		Drop,
+		LookAround
 	}
 
 	public enum TaskState {
@@ -57,14 +84,21 @@ public class Task {
 		get { return postconditions; }
 		protected set { postconditions = value; }
 	}
+	public GoalData Goal {
+		get { return goal; }
+		private set { goal = value; }
+	}
 
 	private Condition[] preconditions = new Condition[0];
 	private Condition[] postconditions = new Condition[0];
+	private GoalData goal = default;
 
 	public Task(Condition[] preconditions,
-		Condition[] postconditions) {
+		Condition[] postconditions,
+		GoalData goalInfo) {
 		this.preconditions = preconditions;
 		this.postconditions = postconditions;
+		this.Goal = goalInfo;
 	}
 
 	public bool AllConditionsSatisfied(Condition[] conditions) {
@@ -165,6 +199,21 @@ public class Task {
 
 				conditionList[i].satisfied = newConditionValue;
 			}
+		}
+	}
+
+	/// <summary>
+	/// Updates the type of goal this task is associated with completing.
+	/// </summary>
+	/// <param name="goalType"> The type of goal the task completes. </param>
+	/// <param name="goalObject"> The data related to the goal. Leave empty to 
+	/// prevent an update. </param>
+	public void UpdateGoal(GoalType goalType,
+		GameObject goalObject) {
+		goal.goalType = goalType;
+
+		if (goalObject) {
+			goal.goalObject = goalObject;
 		}
 	}
 }

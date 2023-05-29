@@ -11,6 +11,19 @@ using static Task;
 /// </summary>
 [RequireComponent(typeof(NavMeshAgent))]
 public class AIAgent : Agent {
+	public HierarchicalTaskNetwork HierarchicalTaskNetwork {
+		get;
+		private set;
+	}
+	public PrimitiveTask FollowGoal {
+		get;
+		private set;
+	}
+	public PrimitiveTask StayGoal {
+		get;
+		private set;
+	}
+
 	#region Sensor Variables
 	private VisualSensor visualSensor = null;
 	#endregion
@@ -27,8 +40,6 @@ public class AIAgent : Agent {
 	private Vector3 nextMoveDestination = Vector3.zero;
 	private NavMeshAgent navMeshAgent = null;
 	#endregion
-
-	private HierarchicalTaskNetwork hierarchicalTaskNetwork = null;
 
 	private Player player = null;
 
@@ -86,7 +97,7 @@ public class AIAgent : Agent {
 	/// already been created.
 	/// </summary>
 	private void CreateHierarchicalTaskNetwork() {
-		if (hierarchicalTaskNetwork != null) {
+		if (HierarchicalTaskNetwork != null) {
 			return;
 		}
 
@@ -98,7 +109,11 @@ public class AIAgent : Agent {
 		Condition[] followPostconditions = new Condition[] {
 			new Condition("In Position")
 		};
-		PrimitiveTask followTask = new PrimitiveTask(Follow, followPreconditions, followPostconditions);
+		GoalData followGoal = new GoalData(GoalType.Follow, null);
+		PrimitiveTask followTask = new PrimitiveTask(Follow,
+			followPreconditions,
+			followPostconditions,
+			followGoal);
 		#endregion
 		#region Move To Task
 		Condition[] moveToPreconditions = new Condition[] {
@@ -108,7 +123,12 @@ public class AIAgent : Agent {
 			new Condition("In Position"),
 			new Condition("In Range")
 		};
-		PrimitiveVectorTask moveToTask = new PrimitiveVectorTask(MoveTo, Vector3.zero, moveToPreconditions, moveToPostconditions);
+		GoalData moveToGoal = new GoalData(GoalType.MoveTo, null);
+		PrimitiveVectorTask moveToTask = new PrimitiveVectorTask(MoveTo,
+			Vector3.zero,
+			moveToPreconditions,
+			moveToPostconditions,
+			moveToGoal);
 		#endregion
 		#region PickupTask
 		Condition[] pickupPreconditions = new Condition[] {
@@ -119,7 +139,11 @@ public class AIAgent : Agent {
 		Condition[] pickupPostconditions = new Condition[] {
 			new Condition("Holding Object")
 		};
-		PrimitiveInteractableTask pickUpTask = new PrimitiveInteractableTask(PickupObject, pickupPreconditions, pickupPostconditions);
+		GoalData pickupGoal = new GoalData(GoalType.Pickup, null);
+		PrimitiveInteractableTask pickupTask = new PrimitiveInteractableTask(PickupObject,
+			pickupPreconditions,
+			pickupPostconditions,
+			pickupGoal);
 		#endregion
 		#region Drop Task
 		Condition[] dropPreconditions = new Condition[] {
@@ -128,16 +152,24 @@ public class AIAgent : Agent {
 		Condition[] dropPostconditions = new Condition[] {
 			new Condition("Not Holding Object")
 		};
-		PrimitiveTask dropTask = new PrimitiveTask(DropObject, dropPreconditions, dropPostconditions);
+		GoalData dropGoal = new GoalData(GoalType.Drop, null);
+		PrimitiveTask dropTask = new PrimitiveTask(DropObject,
+			dropPreconditions,
+			dropPostconditions,
+			dropGoal);
 		#endregion
 		#region Stay Task
 		Condition[] stayPreconditions = new Condition[] {
-			new Condition("Has Destination")
-		};
-		Condition[] stayPostconditions = new Condition[] {
 			new Condition("In Position")
 		};
-		PrimitiveTask stayTask = new PrimitiveTask(Stay, stayPreconditions, stayPostconditions);
+		Condition[] stayPostconditions = new Condition[] {
+			new Condition("Staying")
+		};
+		GoalData stayGoal = new GoalData(GoalType.Stay, null);
+		PrimitiveTask stayTask = new PrimitiveTask(Stay,
+			stayPreconditions,
+			stayPostconditions,
+			stayGoal);
 		#endregion
 		#region Look Around Task
 		Condition[] lookAroundPreconditions = new Condition[] {
@@ -146,42 +178,45 @@ public class AIAgent : Agent {
 		Condition[] lookAroundPostconditions = new Condition[] {
 			new Condition("See Object")
 		};
-		PrimitiveTask lookAroundTask = new PrimitiveTask(LookAround, lookAroundPreconditions, lookAroundPostconditions);
+		GoalData lookAroundGoal = new GoalData(GoalType.LookAround, null);
+		PrimitiveTask lookAroundTask = new PrimitiveTask(LookAround,
+			lookAroundPreconditions,
+			lookAroundPostconditions,
+			lookAroundGoal);
 		#endregion
 
 		Task[] networkTasks = new Task[] {
 			followTask,
 			moveToTask,
-			pickUpTask,
+			pickupTask,
 			dropTask,
 			stayTask,
 			lookAroundTask
 		};
 
-		#region Follow Goal
-		Condition[] followGoalPreconditions = new Condition[] {
-			new Condition("See Object")
-		};
-		Condition[] followGoalPostconditions = new Condition[] {
-			new Condition("In Position")
-		};
-		PrimitiveTask followGoal = new PrimitiveTask(Follow, followGoalPreconditions, followGoalPostconditions);
-		#endregion
+		FollowGoal = new PrimitiveTask(Follow,
+			followPreconditions,
+			followPostconditions,
+			followGoal);
+		StayGoal = new PrimitiveTask(Stay,
+			stayPreconditions,
+			stayPostconditions,
+			stayGoal);
 
 		Task[] goals = new Task[] {
-			followGoal
+			FollowGoal,
+			StayGoal
 		};
 
-		hierarchicalTaskNetwork = new HierarchicalTaskNetwork(goals, networkTasks);
-		hierarchicalTaskNetwork.SetGoal(followGoal);
+		HierarchicalTaskNetwork = new HierarchicalTaskNetwork(goals, networkTasks);
 	}
 
 	private void UpdateHTN() {
-		if (hierarchicalTaskNetwork == null) {
+		if (HierarchicalTaskNetwork == null) {
 			return;
 		}
 
-		hierarchicalTaskNetwork.Update();
+		HierarchicalTaskNetwork.Update();
 	}
 
 	#region Actions
@@ -196,8 +231,8 @@ public class AIAgent : Agent {
 		}
 
 		if (!moveDestinationSet) {
-			Vector3 targetDirection = (player.transform.position - transform.position).normalized;
-			Vector3 targetDestination = player.transform.position - targetDirection * followDistance;
+			Vector3 targetDirection = (FollowGoal.Goal.goalObject.transform.position - transform.position).normalized;
+			Vector3 targetDestination = FollowGoal.Goal.goalObject.transform.position - targetDirection * followDistance;
 			moveDestinationSet = navMeshAgent.SetDestination(targetDestination);
 		}
 

@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using static Task;
 
 /// <summary>
@@ -71,11 +72,17 @@ public class HierarchicalTaskNetwork {
 			return;
 		}
 
-		if (plan.Count > 0) {
-			plan.Clear();
+		if (plan.Count > 0 || currentTaskToExecute != null) {
+			CancelPlan();
 		}
 
 		plan = DecomposeTask(goal, accessibleTasks);
+	}
+
+	private void CancelPlan() {
+		plan.Clear();
+		currentTaskState = default;
+		currentTaskToExecute = null;
 	}
 
 	/// <summary>
@@ -93,6 +100,8 @@ public class HierarchicalTaskNetwork {
 		// Get the task(s) that solve the goal tasks preconditions and add to a stack
 		// loop over tasks that meet the goals preconditions
 		foreach (Task task in validTasks) {
+			// TODO: set a position to move to, interactable here.
+			task.UpdateGoal(task.Goal.goalType, taskToDecompose.Goal.goalObject);
 			plan.Push(task);
 			Condition[] planPostconditions = GatherConditions(plan.ToArray(), ConditionLists.Postconditions);
 
@@ -155,7 +164,8 @@ public class HierarchicalTaskNetwork {
 		// and set them in the same order as the goal tasks preconditions e.g. goal precons =
 		// seeObject, inRange. Then subtasks should be in oder of (seeObject, inRange), (inRange, otherPostcon, seeObject)
 		// seeObject, (otherPostCon, seeObject), inRange, (inRange, otherPostcon).
-		tasks = tasks.OrderByDescending(task => MatchingConditions(task.Postconditions, goal.Preconditions)).ToArray();
+		tasks = tasks.OrderByDescending(task => task.Goal.goalType == goal.Goal.goalType).ThenByDescending(task => MatchingConditions(task.Postconditions,
+			goal.Preconditions)).ToArray();
 		// TODO: if two tasks are on par then order them by something else...
 	}
 
@@ -207,7 +217,9 @@ public class HierarchicalTaskNetwork {
 
 		TaskState currentTaskState = TaskState.NotStarted;
 
-		if (currentTaskToExecute is PrimitiveTask) {
+		if (currentTaskToExecute is PrimitiveTask &&
+			!(currentTaskToExecute is PrimitiveVectorTask) &&
+			!(currentTaskToExecute is PrimitiveInteractableTask)) {
 			currentTaskState = (currentTaskToExecute as PrimitiveTask).Task();
 		} else if (currentTaskToExecute is PrimitiveVectorTask) {
 			currentTaskState = (currentTaskToExecute as PrimitiveVectorTask).Task((currentTaskToExecute as PrimitiveVectorTask).Vector);

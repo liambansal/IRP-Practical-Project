@@ -9,10 +9,12 @@ using System.Collections.Generic;
 public class CompoundTask : Task {
 	private Stack<Task> subtasks = null;
 
-	public CompoundTask(Condition[] preconditions,
+	public CompoundTask(Stack<Task> subtasks,
+		Condition[] preconditions,
 		Condition[] postconditions,
-		Stack<Task> subtasks) : base(preconditions,
-		postconditions) {
+		GoalData goalInfo) : base(preconditions,
+		postconditions,
+		goalInfo) {
 		Preconditions = preconditions;
 		Postconditions = postconditions;
 		this.subtasks = subtasks;
