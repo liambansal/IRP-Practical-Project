@@ -30,10 +30,14 @@ public class Task {
 		/// The object associated with the goal.
 		/// </summary>
 		public GameObject goalObject;
+		public Transform goalPosition;
 
-		public GoalData(GoalType goalType, GameObject goalObject) {
+		public GoalData(GoalType goalType,
+			GameObject goalObject,
+			Transform goalPosition) {
 			this.goalType = goalType;
 			this.goalObject = goalObject;
+			this.goalPosition = goalPosition;
 		}
 	}
 
@@ -119,9 +123,11 @@ public class Task {
 	public static int MatchingConditions(Condition[] firstConditions, Condition[] secondConditions) {
 		int matchingConditions = 0;
 
-		foreach (Condition condition in firstConditions) {
-			if (secondConditions.Contains(condition)) {
-				++matchingConditions;
+		foreach (Condition firstCondition in firstConditions) {
+			foreach (Condition secondCondition in secondConditions) {
+				if (firstCondition.name == secondCondition.name) {
+					++matchingConditions;
+				}
 			}
 		}
 
@@ -130,8 +136,17 @@ public class Task {
 
 	public static bool MissingCondition(Condition[] requiredConditions, Condition[] otherConditions) {
 		foreach (Condition condition in requiredConditions) {
-			if (!otherConditions.Contains(condition)) {
-				return true;
+			bool foundCondition = false;
+
+			foreach (Condition otherCondition in otherConditions) {
+				if (otherCondition.name == condition.name) {
+					foundCondition = true;
+					break;
+				}
+			}
+
+			if (!foundCondition) {
+				return false;
 			}
 		}
 
@@ -221,11 +236,16 @@ public class Task {
 	/// <param name="goalObject"> The data related to the goal. Leave empty to 
 	/// prevent an update. </param>
 	public void UpdateGoal(GoalType goalType,
-		GameObject goalObject) {
+		GameObject goalObject,
+		Transform goalPosition) {
 		goal.goalType = goalType;
 
 		if (goalObject) {
 			goal.goalObject = goalObject;
+		}
+
+		if (goalPosition) {
+			goal.goalPosition = goalPosition;
 		}
 	}
 

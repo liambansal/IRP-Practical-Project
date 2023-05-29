@@ -121,7 +121,7 @@ public class AIAgent : Agent {
 		Condition[] followPostconditions = new Condition[] {
 			new Condition("In Position")
 		};
-		GoalData followGoal = new GoalData(GoalType.Follow, null);
+		GoalData followGoal = new GoalData(GoalType.Follow, null, null);
 		FollowTask = new PrimitiveTask(Follow,
 			followPreconditions,
 			followPostconditions,
@@ -135,7 +135,7 @@ public class AIAgent : Agent {
 			new Condition("In Position"),
 			new Condition("In Range")
 		};
-		GoalData moveToGoal = new GoalData(GoalType.MoveTo, null);
+		GoalData moveToGoal = new GoalData(GoalType.MoveTo, null, null);
 		MoveToTask = new PrimitiveVectorTask(MoveTo,
 			Vector3.zero,
 			moveToPreconditions,
@@ -151,7 +151,7 @@ public class AIAgent : Agent {
 		Condition[] pickupPostconditions = new Condition[] {
 			new Condition("Holding Object")
 		};
-		GoalData pickupGoal = new GoalData(GoalType.Pickup, null);
+		GoalData pickupGoal = new GoalData(GoalType.Pickup, null, null);
 		PickupTask = new PrimitiveInteractableTask(PickupObject,
 			pickupPreconditions,
 			pickupPostconditions,
@@ -160,12 +160,13 @@ public class AIAgent : Agent {
 		#region Drop Task
 		Condition[] dropPreconditions = new Condition[] {
 			new Condition("Holding Object"),
-			new Condition("In Position")
+			new Condition("In Position"),
+			new Condition("In Range")
 		};
 		Condition[] dropPostconditions = new Condition[] {
 			//new Condition("Not Holding Object")
 		};
-		GoalData dropGoal = new GoalData(GoalType.Drop, null);
+		GoalData dropGoal = new GoalData(GoalType.Drop, null, null);
 		DropTask = new PrimitiveTask(DropObject,
 			dropPreconditions,
 			dropPostconditions,
@@ -178,7 +179,7 @@ public class AIAgent : Agent {
 		Condition[] stayPostconditions = new Condition[] {
 			new Condition("In Position")
 		};
-		GoalData stayGoal = new GoalData(GoalType.Stay, null);
+		GoalData stayGoal = new GoalData(GoalType.Stay, null, null);
 		StayTask = new PrimitiveTask(Stay,
 			stayPreconditions,
 			stayPostconditions,
@@ -189,7 +190,7 @@ public class AIAgent : Agent {
 		Condition[] lookAroundPostconditions = new Condition[] {
 			new Condition("See Object")
 		};
-		GoalData lookAroundGoal = new GoalData(GoalType.LookAround, null);
+		GoalData lookAroundGoal = new GoalData(GoalType.LookAround, null, null);
 		PrimitiveTask lookAroundTask = new PrimitiveTask(LookAround,
 			lookAroundPreconditions,
 			lookAroundPostconditions,

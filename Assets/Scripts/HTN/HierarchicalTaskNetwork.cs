@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using static Task;
 
 /// <summary>
@@ -82,7 +83,9 @@ public class HierarchicalTaskNetwork {
 			// Gets a set of tasks that solve the preconditions of the task to
 			// decompose.
 			for (int i = 0; i < validTasks.Length; ++i) {
-				validTasks[i].UpdateGoal(validTasks[i].Goal.goalType, taskToDecompose.Goal.goalObject);
+				validTasks[i].UpdateGoal(validTasks[i].Goal.goalType,
+					taskToDecompose.Goal.goalObject,
+					taskToDecompose.Goal.goalPosition);
 				UpdateAlternateTasks(ref validTasks[i]);
 				plan.Push(validTasks[i]);
 				
@@ -136,7 +139,7 @@ public class HierarchicalTaskNetwork {
 		// Sets the data that's used as the argument for the tasks with parameters.
 		void UpdateAlternateTasks(ref Task task) {
 			if (task is PrimitiveVectorTask && task.Goal.goalObject) {
-				(task as PrimitiveVectorTask).SetVector(task.Goal.goalObject.transform.position);
+				(task as PrimitiveVectorTask).SetVector(task.Goal.goalPosition.position);
 				task.ChangeCondition(ConditionLists.Preconditions,
 					"Vector Set",
 					"",

@@ -5,6 +5,7 @@ using StarterAssets;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static Interactable;
+using static Task;
 
 /// <summary>
 /// Controls the player's response to all device inputs such as movement, 
@@ -19,32 +20,49 @@ public class Player : Agent {
 
 	public void OrderAIToFollow() {
 		PrimitiveTask followTask = aiAgent.FollowTask;
-		followTask.UpdateGoal(Task.GoalType.Follow, gameObject);
+		followTask.UpdateGoal(GoalType.Follow,
+			gameObject,
+			gameObject.transform);
 		taskNetwork.SetGoal(followTask);
 	}
 
 	public void OrderAIToMove(GameObject moveDestination) {
 		PrimitiveVectorTask moveTask = aiAgent.MoveToTask;
-		moveTask.UpdateGoal(Task.GoalType.MoveTo, moveDestination);
+		moveTask.UpdateGoal(GoalType.MoveTo,
+			moveDestination,
+			moveDestination.transform);
 		taskNetwork.SetGoal(moveTask);
 	}
 
 	public void OrderAIToStay() {
 		PrimitiveTask stayTask = aiAgent.StayTask;
 		// Agent should prefer tasks that satisfy this goal type over others.
-		stayTask.UpdateGoal(Task.GoalType.MoveTo, aiAgent.gameObject);
+		stayTask.UpdateGoal(GoalType.MoveTo,
+			aiAgent.gameObject,
+			aiAgent.gameObject.transform);
 		taskNetwork.SetGoal(stayTask);
 	}
 
 	public void OrderAIToPickupObject(Interactable interactable) {
 		PrimitiveInteractableTask pickupTask = aiAgent.PickupTask;
-		pickupTask.UpdateGoal(Task.GoalType.Pickup, interactable.gameObject);
+		pickupTask.UpdateGoal(GoalType.Pickup,
+			interactable.gameObject,
+			interactable.gameObject.transform);
 		taskNetwork.SetGoal(pickupTask);
 	}
 
-	public void OrderAIToDropObject(GameObject objectToDrop) {
+	public void OrderAIToDropObject(GameObject objectToDrop,
+		Transform dropPosition) {
 		PrimitiveTask dropTask = aiAgent.DropTask;
-		dropTask.UpdateGoal(Task.GoalType.Drop, objectToDrop);
+
+		if (aiAgent.CurrentInteractable) {
+			dropTask.ChangeCondition(ConditionLists.Preconditions,
+				"Holding Object",
+				"",
+				true);
+		}
+
+		dropTask.UpdateGoal(GoalType.Drop, objectToDrop, dropPosition);
 		taskNetwork.SetGoal(dropTask);
 	}
 
@@ -119,7 +137,9 @@ public class Player : Agent {
 		const int raycastDistance = 20;
 		Physics.Raycast(ray,
 			out RaycastHit raycastHit,
-			raycastDistance);
+			raycastDistance,
+			~LayerMask.GetMask("Default"),
+			QueryTriggerInteraction.Ignore);
 		Debug.DrawRay(ray.origin, ray.direction * raycastDistance, Color.yellow, Mathf.Infinity);
 
 		if (!raycastHit.collider) {
@@ -140,7 +160,7 @@ public class Player : Agent {
 			instantiatedPing.SetPing(interactableScript);
 			// Case for dropping an interactable item to trigger something.
 		} else if (pressurePlate && aiAgent) {
-			OrderAIToDropObject(pressurePlate.TriggerGameObject);
+			OrderAIToDropObject(pressurePlate.TriggerGameObject, pressurePlate.transform);
 			instantiatedPing.SetPing(pressurePlate);
 			// Case for activating an interactable item.
 		} else {
