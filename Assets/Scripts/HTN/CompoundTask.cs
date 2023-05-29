@@ -7,7 +7,10 @@ using System.Collections.Generic;
 /// A collection of tasks to be executed in a sequence.
 /// </summary>
 public class CompoundTask : Task {
-	private Stack<Task> subtasks = null;
+	public Stack<Task> Subtasks {
+		get;
+		private set;
+	}
 
 	public CompoundTask(Stack<Task> subtasks,
 		Condition[] preconditions,
@@ -17,8 +20,9 @@ public class CompoundTask : Task {
 		goalInfo) {
 		Preconditions = preconditions;
 		Postconditions = postconditions;
-		this.subtasks = subtasks;
+		Subtasks = subtasks;
 	}
 
 	// TODO: create a method that executes subtasks one by one.
+	// If a subtask is a compound task then use recursion on the method above.
 }

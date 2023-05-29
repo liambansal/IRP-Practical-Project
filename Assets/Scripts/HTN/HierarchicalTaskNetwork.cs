@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using static Task;
 
 /// <summary>
@@ -135,10 +134,9 @@ public class HierarchicalTaskNetwork {
 			plan.Push(taskToDecompose);
 		}
 
-		// TODO: loop over the planned tasks to check all preconditions have been addressed
+		bool areAllSubtsksAddressed = AreAllTasksAddressed(plan.ToArray(), null);
 
-		// if all new tasks' preconditions are met
-		if (true) {
+		if (areAllSubtsksAddressed) {
 			Task[] planCopy = plan.ToArray();
 			plan.Clear();
 
@@ -150,6 +148,7 @@ public class HierarchicalTaskNetwork {
 
 			return plan;
 		} else {
+			// TODO: 
 			// foreach task
 				// if precons not met && no subtasks exist
 					// repeat above process for all new tasks by CallingAboveMethod() and pass the subTask as a parameter
@@ -171,21 +170,49 @@ public class HierarchicalTaskNetwork {
 				// look around (precon = inPosition, postcon = seeCube)
 			// move to cube (precon = seeCube, postcon = inRange)
 
-		// TODO: add a bias for tasks that have their postconditions matching
-		// the order of the goal tasks preconditions.
+		// TODO: return true if the plan has subtasks that satisfy
+		// all the preconditions, and each subtasks has a task that satisfies
+		// its preconditions etc.
+		bool AreAllTasksAddressed(Task[] plan, Task previousTask) {
+			foreach (Task task in plan) {
+				if (task is CompoundTask) {
+					if (!AreAllTasksAddressed((task as CompoundTask).Subtasks.ToArray(), previousTask)) {
+						return false;
+					}
+
+					// Does the compound task need to have its preconditions satisfied.
+					continue;
+				}
+
+				foreach (Condition condition in task.Preconditions) {
+					if (!condition.satisfied ||
+						(previousTask != null && !previousTask.Postconditions.Contains(condition))) {
+						return false;
+					}
+				}
+
+				previousTask = task;
+			}
+
+			return true;
+		}
 	}
 
+	// TODO: add a bias for tasks that have their postconditions matching
+	// the order of the goal tasks preconditions.
+	// TODO: if two tasks are on par then order them by something else...
 	/// <summary>
 	/// Orders the tasks by which one is the most optimal to execute first.
 	/// </summary>
 	private void OrderTasks(ref Task[] tasks) {
-		// order the available tasks by which one's postconditions satisfies the goal tasks' preconditions best,
-		// and set them in the same order as the goal tasks preconditions e.g. goal precons =
-		// seeObject, inRange. Then subtasks should be in oder of (seeObject, inRange), (inRange, otherPostcon, seeObject)
-		// seeObject, (otherPostCon, seeObject), inRange, (inRange, otherPostcon).
+		// TODO: Order the available tasks by which one's postconditions satisfies
+		// the goal tasks' preconditions best, and set them in the same order
+		// as the goal tasks preconditions e.g. goal precons = seeObject,
+		// inRange. Then subtasks should be in oder of (seeObject, inRange),
+		// (inRange, otherPostcon, seeObject) seeObject, (otherPostCon,
+		// seeObject), inRange, (inRange, otherPostcon).
 		tasks = tasks.OrderByDescending(task => task.Goal.goalType == goal.Goal.goalType).ThenByDescending(task => MatchingConditions(task.Postconditions,
 			goal.Preconditions)).ToArray();
-		// TODO: if two tasks are on par then order them by something else...
 	}
 
 	// TODO: add a task even if it's condition only partially matches.
@@ -216,11 +243,12 @@ public class HierarchicalTaskNetwork {
 	/// </summary>
 	private void ExecutePlan() {
 		// Does the HTN have no goal?
-		if (goal == null||
+		if (goal == null ||
+			(plan != null &&
 			// Has the HTN's goal been achieved?
-			(this.currentTaskState == TaskState.Succeeded && plan.Count == 0) ||
+			((this.currentTaskState == TaskState.Succeeded && plan.Count == 0) ||
 			// Is there no plan?
-			plan.Count == 0) {
+			plan.Count == 0))) {
 			return;
 		}
 

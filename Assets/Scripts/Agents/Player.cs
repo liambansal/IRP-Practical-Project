@@ -135,15 +135,20 @@ public class Player : Agent {
 		Ping instantiatedPing = Instantiate(pingPrefab, pingPosition, Quaternion.identity, null).GetComponentInChildren<Ping>();
 		Interactable interactableScript = raycastHit.collider.GetComponent<Interactable>();
 
+		// Case for picking up an interactable item.
 		if (interactableScript &&
 			interactableScript is IIsTrigger &&
 			!(interactableScript is IHasTrigger)) {
 			OrderAIToPickupObject(interactableScript);
 			instantiatedPing.SetPing(interactableScript);
+			// Case for dropping an interactable item to trigger something.
 		} else if (interactableScript &&
 			interactableScript is IHasTrigger) {
 			OrderAIToDropObject();
 			instantiatedPing.SetPing(interactableScript);
+			// Case for activating an interactable item.
+		} else if (true == false) {
+			// TODO: create plan to activate the interactable.
 		} else {
 			OrderAIToMove(instantiatedPing.gameObject);
 		}

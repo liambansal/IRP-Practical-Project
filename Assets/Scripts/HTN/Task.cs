@@ -138,6 +138,13 @@ public class Task {
 		return false;
 	}
 
+	/// <summary>
+	/// Collects all the conditions of one type from among a collection of tasks.
+	/// </summary>
+	/// <param name="tasks"> The tasks to search through. </param>
+	/// <param name="conditionListType"> The type of conditions to collect. </param>
+	/// <returns> A list of all the conditions of one type that exist within 
+	/// the task collection. </returns>
 	public static Condition[] GatherConditions(Task[] tasks, ConditionLists conditionListType) {
 		List<Condition> conditions = new List<Condition>();
 
